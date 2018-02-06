@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "name": "soundfont-player",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output",
+    "dist"
+  ],
+  "dependencies": {
+    "purescript-console": "^3.0.0",
+    "purescript-halogen": "^3.1.1",
+    "purescript-halogen-css": "^7.0.0",
+    "purescript-css": "^3.3.0",
+    "jacereda/purescript-arraybuffer": "^6.0.0",
+    "purescript-soundfonts": "^1.2.0"
+  },
+  "resolutions": {
+    "purescript-arraybuffer-types": "^2.0.0"
+  }
+}
