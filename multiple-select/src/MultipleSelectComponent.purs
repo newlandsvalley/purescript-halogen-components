@@ -3,7 +3,7 @@ module MultipleSelectComponent where
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import Data.List (List(..), elem, filter, reverse, toUnfoldable, (:))
+import Data.List (List, elem, filter, reverse, toUnfoldable, (:))
 import Data.Array (cons) as A
 import Control.Monad.Aff (Aff)
 
@@ -20,29 +20,21 @@ data Query a =
   | GetSelections (List String -> a)
 
 
-
 type State = {
     instruction :: String          -- the instruction on what to select
   , available :: List String       -- available options
   , selected  :: List String       -- currently selected options
   }
 
-component :: ∀ eff. String -> List String -> H.Component HH.HTML Query Unit Void (Aff (sdom :: SDOM | eff))
-component instruction available =
+component :: ∀ eff. State -> H.Component HH.HTML Query Unit Void (Aff (sdom :: SDOM | eff))
+component initialState =
   H.component
-    { initialState: const $ initialState instruction available
+    { initialState: const $ initialState
     , render
     , eval
     , receiver: const Nothing
     }
   where
-
-  initialState :: String -> List String -> State
-  initialState instruction available = {
-    instruction : instruction
-    , available : available
-    , selected : Nil
-  }
 
   render :: State -> H.ComponentHTML Query
   render state =

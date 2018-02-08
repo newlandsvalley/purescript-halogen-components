@@ -11,5 +11,11 @@ import MultipleSelect.Dom (SDOM)
 
 main :: Eff (HA.HalogenEffects (sdom :: SDOM)) Unit
 main = HA.runHalogenAff do
+  let
+    initialState =
+      { instruction : "choose instruments"
+      , available : ("piano" : "guitar" : "mandolin" : "bouzouki" : Nil)
+      , selected : Nil
+      }
   body <- HA.awaitBody
-  runUI (MS.component "choose instruments" ("piano" : "guitar" : "mandolin" : "bouzouki" : Nil) ) unit body
+  runUI (MS.component initialState) unit body

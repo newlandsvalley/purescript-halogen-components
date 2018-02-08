@@ -30,8 +30,8 @@ data Message = FileLoaded Filespec
 
 type State = Maybe Filespec
 
-fileInputComponent :: forall eff. FileInputContext -> H.Component HH.HTML Query Unit Message (Aff (fileio :: FILEIO | eff))
-fileInputComponent ctx =
+component :: forall eff. FileInputContext -> H.Component HH.HTML Query Unit Message (Aff (fileio :: FILEIO | eff))
+component ctx =
   H.component
     { initialState: const initialState
     , render: render ctx

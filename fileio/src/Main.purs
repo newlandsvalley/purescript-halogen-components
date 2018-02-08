@@ -4,7 +4,7 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Aff.Console (CONSOLE, log)
-import FileInputComponent (fileInputComponent, Message(..)) as FI
+import FileInputComponent (component, Message(..)) as FI
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
 import Control.Coroutine as CR
@@ -29,7 +29,7 @@ main = HA.runHalogenAff
     -}
   in do
     body <- HA.awaitBody
-    io <- runUI (FI.fileInputComponent ctx ) unit body
+    io <- runUI (FI.component ctx ) unit body
 
     io.subscribe $ CR.consumer \(FI.FileLoaded filespec) -> do
       log $ "File was loaded: " <> filespec.name
