@@ -52,3 +52,19 @@ label {
   top: 0;
   padding: 5px;
 }
+
+.msCommit {
+  /* commit the completed selections */
+  background: #66cc66;
+	border: none;
+	border-radius: 4px;
+	box-shadow: 2px 2px 2px #333;
+	cursor: pointer;
+    font-size: 100%;
+	color: black;
+	margin: 12px;
+	padding: 5px;
+  -webkit-transition-duration: 0.2s;
+  -moz-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+}
