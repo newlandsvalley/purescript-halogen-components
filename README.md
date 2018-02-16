@@ -1,12 +1,20 @@
 halogen-components
 ==================
 
-I am attempting to teach myself purescript-halogen and to weigh up the pros and cons of using it instead of Pux.  This module consists of a set of isolated UI components, chosen because they have been the predominant GUI pieces within Pux modules .  Currently we have:
+This module consists of a heterogeneous group of UI components, chosen because they are of use in building various music player or editor applications.  Currently we have:
 
+  * Soundfont melody player
   * File input select
   * Multiple select dropdown
-  * Soundfont melody player
+  * Trivial button
+ 
+to build
+--------
 
+   bower install
+   
+   pulp build
+  
 to build each example
 ---------------------
 

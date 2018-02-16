@@ -1,15 +1,14 @@
-module PlayerComponent where
+module Halogen.PlayerComponent where
 
 import Prelude
 
-import Audio.SoundFont (AUDIO, Instrument, playNotes)
+import Audio.SoundFont (AUDIO, Instrument, playNotes, instrumentChannels)
 import Control.Monad.Aff (Aff, delay)
 import Control.Monad.Aff.Class (class MonadAff)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (class MonadEff)
 import Control.Monad.State.Class (class MonadState)
 import Data.Array (null, index, length)
-import Data.Map (empty)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Eq (genericEq)
 import Data.Generic.Rep.Show (genericShow)
@@ -21,7 +20,7 @@ import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.HTML.Core (PropName(..))
-import PlayerComponent.Style (capsuleStyle, playerBlockStyle, playerStyle
+import Halogen.PlayerComponent.Style (capsuleStyle, playerBlockStyle, playerStyle
   , buttonStyle)
 import Audio.SoundFont.Melody.Class (class Playable, toMelody)
 import Audio.SoundFont.Melody (Melody, MidiPhrase)
@@ -131,13 +130,25 @@ component playable instruments =
                 , capsuleStyle
                 ] []
           ]
+          {- debug
+          , HH.div_
+            [ HH.text ("melody length: " <> show (length state.melody))
+            , HH.text ("no of instruments: " <> show (length state.instruments))]
+          -}
         ]
 
   eval :: ∀ eff p. Playable p => p -> Query ~> H.ComponentDSL State Query Void (Aff (au :: AUDIO | eff))
   eval p = case _ of
 
+    -- when we change the instruments (possibly im mid-melody) we need to
+    -- re-initialise and remove the old melody which will need to be
+    -- recomputed with the new instruments (done when play is first pressed) 
     SetInstruments instruments next -> do
-      H.modify (\state -> state { instruments = instruments})
+      H.modify (\state -> state { instruments = instruments
+                                , phraseIndex = 0
+                                , playing = PENDINGPAUSED
+                                , melody = []
+                                })
       pure next
 
 
@@ -206,7 +217,7 @@ establishMelody :: ∀ m eff p.
 establishMelody playable = do
   state <- H.get
   let
-    melody = toMelody playable empty
+    melody = toMelody playable (instrumentChannels state.instruments)
   H.modify (\state -> state { melody = melody})
   pure unit
 

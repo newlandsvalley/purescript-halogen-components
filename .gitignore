@@ -1,2 +1,8 @@
+/.*
+!/.gitignore
+/bower_components/
+/node_modules/
+/output/
+/dist/app.js
 /deprecated/
 /purescript-halogen-template/
