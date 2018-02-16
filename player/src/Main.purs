@@ -19,7 +19,7 @@ import Data.String (fromCharArray)
 import Halogen as H
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
-import PlayerComponent (component)
+import Halogen.PlayerComponent (component)
 import Audio.SoundFont.Melody.Class (MidiRecording(..))
 import Prelude (Unit, unit, bind, map, pure, (<>), ($), (<<<))
 import Partial.Unsafe (unsafePartial)

@@ -6,16 +6,22 @@ import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
 import Data.List (List(..), (:))
 
-import MultipleSelectComponent (component) as MS
-import MultipleSelect.Dom (SDOM)
+import Halogen.MultipleSelectComponent (Context, State, component) as MSC
+import Halogen.MultipleSelectComponent.Dom (SDOM)
 
 main :: Eff (HA.HalogenEffects (sdom :: SDOM)) Unit
 main = HA.runHalogenAff do
   let
+    initialState :: MSC.State
     initialState =
       { instruction : "choose instruments"
       , available : ("piano" : "guitar" : "mandolin" : "bouzouki" : Nil)
       , selected : Nil
       }
+    ctx :: MSC.Context
+    ctx =
+        { commitPrompt : "change instruments:"
+        , commitButtonText : "load"
+        }
   body <- HA.awaitBody
-  runUI (MS.component initialState) unit body
+  runUI (MSC.component ctx initialState) unit body

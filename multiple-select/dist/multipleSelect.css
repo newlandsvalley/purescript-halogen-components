@@ -1,12 +1,34 @@
 
-label {
-  display: block;
-  font-size: 1em;
-  font-family: Georgia, serif;
-  color: #444;
+.hoverable {
+  border: none;
+  border-radius: 6px;
+  padding: 2px 10px;
+  margin: 10px 20px 10px 0;
+  font-size: 1.1em;
+  background-color: #67d665;  /* lighter green */
+  color: black;
+  box-shadow: 3px 3px #669966;  /* darker green */
+  transition: 500ms;
 }
 
-.msSelect {
+.hoverable:hover {
+  box-shadow: 0 0;
+  background-color: #669966;   /* darker green */
+}
+
+
+
+.msSelectDiv {
+  /* this is the parent div of the whole grouping */
+  margin : 20 0 20 0
+}
+
+/* this is the parent div of the add selection grouping */
+msAddSelectionDiv {
+  margin : 10 0 10 0
+}
+
+.msAddSelection {
   /* this is the selection dropdown */
   background-color: #cccc99;
   height: 28px;
@@ -27,6 +49,7 @@ label {
   margin-left: 0;
   padding-left: 0;
   list-style: none;
+  /* background: #ddd; */
   background: #e6ffb3;
   border: 1px solid #bbb;
   width: 15em;
@@ -44,6 +67,7 @@ label {
   display: block;
 }
 
+
 .msListItemRemove {
   /* the remove link in each list item */
   text-decoration: none;
@@ -51,20 +75,4 @@ label {
   right: 0;
   top: 0;
   padding: 5px;
-}
-
-.msCommit {
-  /* commit the completed selections */
-  background: #66cc66;
-	border: none;
-	border-radius: 4px;
-	box-shadow: 2px 2px 2px #333;
-	cursor: pointer;
-    font-size: 100%;
-	color: black;
-	margin: 12px;
-	padding: 5px;
-  -webkit-transition-duration: 0.2s;
-  -moz-transition-duration: 0.2s;
-  transition-duration: 0.2s;
 }

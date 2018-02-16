@@ -9,8 +9,9 @@
     "dist"
   ],
   "dependencies": {
-    "purescript-console": "^3.0.0",
-    "purescript-halogen": "^3.1.1",
-    "purescript-js-fileio": "https://github.com/newlandsvalley/purescript-js-fileio.git#1.0.2"
+    "purescript-halogen-components": "https://github.com/newlandsvalley/purescript-halogen-components.git"
+  },
+  "resolutions": {
+    "purescript-arraybuffer-types": "^2.0.0"
   }
 }

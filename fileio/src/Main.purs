@@ -4,7 +4,7 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Aff.Console (CONSOLE, log)
-import FileInputComponent (component, Message(..)) as FI
+import Halogen.FileInputComponent (component, Message(..)) as FI
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
 import Control.Coroutine as CR
@@ -17,7 +17,7 @@ main = HA.runHalogenAff
   let
     ctx = { componentId : "midiinput"
           , isBinary : true
-          , prompt : "load a midi file:"
+          , prompt : "load a midi file"
           , accept : MediaType ".midi, .mid"
           }
     {-}
