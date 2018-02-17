@@ -142,11 +142,20 @@ component playable instruments =
 
     -- when we change the instruments (possibly im mid-melody) we need to
     -- re-initialise and remove the old melody which will need to be
-    -- recomputed with the new instruments (done when play is first pressed) 
+    -- recomputed with the new instruments (done when play is first pressed)
     SetInstruments instruments next -> do
+      state <- H.get
+      -- set new state to PENDINGAUSED if we interrupt mid-tune
+      let
+        newPlayingState =
+          if (state.playing == PLAYING)
+            then PENDINGPAUSED
+          else
+            PAUSED
       H.modify (\state -> state { instruments = instruments
                                 , phraseIndex = 0
-                                , playing = PENDINGPAUSED
+                                , phraseLength = 0.0
+                                , playing = newPlayingState
                                 , melody = []
                                 })
       pure next
