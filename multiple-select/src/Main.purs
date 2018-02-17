@@ -14,13 +14,12 @@ main = HA.runHalogenAff do
   let
     initialState :: MSC.State
     initialState =
-      {
-      , available : ("piano" : "guitar" : "mandolin" : "bouzouki" : Nil)
+      { available : ("piano" : "guitar" : "mandolin" : "bouzouki" : Nil)
       , selected : Nil
       }
     ctx :: MSC.Context
     ctx =
-        { selectPrompt : "choose instruments"
+        { selectPrompt : "select instruments"
         , commitPrompt : "change instruments:"
         , commitButtonText : "load"
         }
