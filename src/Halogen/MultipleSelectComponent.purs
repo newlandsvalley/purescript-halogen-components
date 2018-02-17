@@ -24,13 +24,13 @@ data Query a =
 data Message = CommittedSelections (List String)
 
 type Context = {
-    commitPrompt       :: String   -- the user prompt for committing changes
+    selectPrompt       :: String   -- the user instruction on what to select
+  , commitPrompt       :: String   -- the user prompt for committing changes
   , commitButtonText   :: String   -- the text on the commit button
   }
 
 type State = {
-    instruction :: String          -- the instruction on what to select
-  , available :: List String       -- available options
+    available :: List String       -- available options
   , selected  :: List String       -- currently selected options
   }
 
@@ -48,14 +48,14 @@ component ctx initialState =
   render ctx state =
     HH.div
       [ HP.class_ $ ClassName "msSelectDiv" ]
-      [ addSelectionDropdown state
+      [ addSelectionDropdown ctx state
       , viewSelections state
       , commitSelectionsButton ctx state
       ]
 
   -- allow the user to add a selection to the growing multi-select list
-  addSelectionDropdown :: State -> H.ComponentHTML Query
-  addSelectionDropdown state =
+  addSelectionDropdown :: Context -> State -> H.ComponentHTML Query
+  addSelectionDropdown ctx state =
     let
       f :: ∀ p i. String -> HTML p i
       f s =
@@ -69,11 +69,11 @@ component ctx initialState =
           HH.select
             [ HP.class_ $ ClassName "msAddSelection"
             , HP.id_  "selection-menu"
-            , HP.value state.instruction
+            -- , HP.value ctx.selectPrompt
             , HE.onValueChange  (HE.input AddSelection)
             ]
             (A.cons
-              (HH.option [ HP.disabled true ] [ HH.text state.instruction])
+              (HH.option [ HP.disabled true ] [ HH.text ctx.selectPrompt])
               (map f $ toUnfoldable state.available)
             )
         ]
