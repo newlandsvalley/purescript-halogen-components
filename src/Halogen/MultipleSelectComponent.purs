@@ -69,7 +69,7 @@ component ctx initialState =
           HH.select
             [ HP.class_ $ ClassName "msAddSelection"
             , HP.id_  "selection-menu"
-            -- , HP.value ctx.selectPrompt
+            , HP.value ctx.selectPrompt
             , HE.onValueChange  (HE.input AddSelection)
             ]
             (A.cons
