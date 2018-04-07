@@ -1,12 +1,17 @@
 module Halogen.SimpleButtonComponent where
 
+-- | a trivially simple button where the toggled variant has a button with text
+-- | that toggles each time it is pressed.
+-- | The plain vanilla component has static text.
+
 import Prelude
+
 import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
+import Halogen.HTML.Core (ClassName(..))
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-import Halogen.HTML.Core (ClassName(..))
 
 type State = Boolean
 
@@ -15,11 +20,17 @@ data Query a
 
 data Message = Toggled Boolean
 
+-- | the basic component has a label on the button that never alters
 component :: forall m. String -> H.Component HH.HTML Query Unit Message m
 component label =
+  toggledLabelComponent label label
+
+-- | but the toggled label component toggles between labels each time the button is pressed
+toggledLabelComponent :: forall m. String -> String -> H.Component HH.HTML Query Unit Message m
+toggledLabelComponent offlabel onLabel =
   H.component
     { initialState: const initialState
-    , render: render label
+    , render: render offlabel onLabel
     , eval
     , receiver: const Nothing
     }
@@ -28,8 +39,15 @@ component label =
   initialState :: State
   initialState = false
 
-  render :: String -> State -> H.ComponentHTML Query
-  render label state =
+  render :: String -> String -> State -> H.ComponentHTML Query
+  render offLabel onLabel state =
+    let
+      label =
+        if (state) then
+          onLabel
+        else
+          offLabel
+    in
       HH.button
         [ HE.onClick (HE.input_ Toggle)
         , HP.class_ $ ClassName "hoverable"
