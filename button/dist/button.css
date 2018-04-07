@@ -20,11 +20,3 @@
 .center {
   text-align: center;
 }
-
-.fileInputLabel {
-  /* the label for a file input */
-  margin: 0 20px 0 0;
-  /* padding: 1px 8px 0 8px; */
-  font-size: 1.1em;
-  display: inline-block;
-}
