@@ -1,5 +1,5 @@
-Soundfont player component
-==========================
+Soundfont player component example
+==================================
 
 A Halogen component that is a player for a __Melody__  (i.e. a melody composed of a succession of phrases of __MidiNote__).  [purescript-soundfonts](https://github.com/newlandsvalley/purescript-soundfonts)
 provides the basic means of playing an individual phrase. However, if we were to re-render after every individual note, the playback would not be paced properly.  Instead we group notes into phrases which  are the units of interruptibility. This means the buttons are slightly unresponsive because they must wait for the phrase to end before they take effect.
