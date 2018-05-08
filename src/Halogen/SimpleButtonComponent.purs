@@ -3,6 +3,7 @@ module Halogen.SimpleButtonComponent where
 -- | a trivially simple button where the toggled variant has a button with text
 -- | that toggles each time it is pressed.
 -- | The plain vanilla component has static text.
+-- | Whether or not it is enabled may be set externally via a query
 
 import Prelude
 
@@ -13,10 +14,14 @@ import Halogen.HTML.Core (ClassName(..))
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 
-type State = Boolean
+type State =
+  { isOn :: Boolean
+  , isEnabled :: Boolean
+  }
 
-data Query a
-  = Toggle a
+data Query a =
+    Toggle a
+  | UpdateEnabled Boolean a
 
 data Message = Toggled Boolean
 
@@ -37,13 +42,16 @@ toggledLabelComponent offlabel onLabel =
   where
 
   initialState :: State
-  initialState = false
+  initialState =
+    { isOn : false
+    , isEnabled : true
+    }
 
   render :: String -> String -> State -> H.ComponentHTML Query
   render offLabel onLabel state =
     let
       label =
-        if (state) then
+        if (state.isOn) then
           onLabel
         else
           offLabel
@@ -51,6 +59,7 @@ toggledLabelComponent offlabel onLabel =
       HH.button
         [ HE.onClick (HE.input_ Toggle)
         , HP.class_ $ ClassName "hoverable"
+        , HP.enabled state.isEnabled
         ]
         [ HH.text label ]
 
@@ -58,7 +67,10 @@ toggledLabelComponent offlabel onLabel =
   eval = case _ of
     Toggle next -> do
       state <- H.get
-      let nextState = not state
+      let nextState = state { isOn = not state.isOn }
       H.put nextState
-      H.raise $ Toggled nextState
+      H.raise $ Toggled nextState.isOn
+      pure next
+    UpdateEnabled isEnabled next -> do
+      H.modify (\state -> state {isEnabled = isEnabled})
       pure next

@@ -1,7 +1,8 @@
+module Halogen.FileInputComponent where
+
 -- | A halogen component for handling a file input button
 -- | which handles the input by means of purescript-js-fileio
 -- | (and which supports both text and binary input)
-module Halogen.FileInputComponent where
 
 import Prelude
 
@@ -19,6 +20,9 @@ import Halogen (IProp)
 import Halogen.HTML.CSS (style)
 import CSS.Display (display, displayNone)
 
+-- | A simple file input control that wraps JS.FileIO
+-- | Whether or not it is enabled may be set externally via a query
+
 type Context = {
     componentId :: String     -- the component id
   , isBinary    :: Boolean    -- does it handle binary as text or just simple text
@@ -26,11 +30,16 @@ type Context = {
   , accept      :: MediaType  -- the accepted media type(s)
   }
 
-data Query a = LoadFile a
+data Query a =
+    LoadFile a
+  | UpdateEnabled Boolean a
 
 data Message = FileLoaded Filespec
 
-type State = Maybe Filespec
+type State =
+  { mfsp :: Maybe Filespec
+  , isEnabled :: Boolean
+  }
 
 component :: forall eff. Context -> H.Component HH.HTML Query Unit Message (Aff (fileio :: FILEIO | eff))
 component ctx =
@@ -43,8 +52,10 @@ component ctx =
   where
 
   initialState :: State
-  initialState = Nothing
-
+  initialState =
+    { mfsp: Nothing
+    , isEnabled : true
+    }
 
   render :: Context  -> State -> H.ComponentHTML Query
   render ctx state =
@@ -64,6 +75,7 @@ component ctx =
           , HP.type_ HP.InputFile
           , HP.id_  ctx.componentId
           , HP.accept ctx.accept
+          , HP.enabled state.isEnabled
           , noDisplayStyle
           ]
       ]
@@ -76,8 +88,11 @@ component ctx =
            H.liftAff $ loadBinaryFileAsText ctx.componentId
          else
            H.liftAff $ loadTextFile ctx.componentId
-      H.modify (\state -> Just filespec )
+      H.modify (\state -> state { mfsp = Just filespec } )
       H.raise $ FileLoaded filespec
+      pure next
+    UpdateEnabled isEnabled next -> do
+      H.modify (\state -> state {isEnabled = isEnabled})
       pure next
 
   noDisplayStyle :: ∀ i r. IProp (style :: String | r) i

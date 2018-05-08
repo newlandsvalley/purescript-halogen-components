@@ -16,10 +16,11 @@ import Data.ArrayBuffer.Typed (asUint8Array, toIntArray)
 import Data.Int.Bits (and)
 import Data.Char (fromCharCode)
 import Data.String (fromCharArray)
+import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
-import Halogen.PlayerComponent (component)
+import Halogen.PlayerComponent (component, Query(..))
 import Audio.SoundFont.Melody.Class (MidiRecording(..))
 import Prelude (Unit, unit, bind, map, pure, (<>), ($), (<<<))
 import Partial.Unsafe (unsafePartial)
@@ -93,4 +94,9 @@ main = HA.runHalogenAff do
     erecording = (parse <<< normalise <<< denormalise <<< toUint8Array) midiBytes
     recording = unsafePartial $ fromRight erecording
   body <- HA.awaitBody
-  runUI (component (MidiRecording recording) instruments) unit body
+  -- io <- runUI (component (Just (MidiRecording recording)) instruments) (MidiRecording recording) body
+  io <- runUI (component (MidiRecording recording) instruments) (MidiRecording recording) body
+  {- if we want to change the Playable recording, we can use this:
+  _ <- io.query $ H.action $ HandleNewPlayable (MidiRecording recording)
+  -}
+  pure unit
