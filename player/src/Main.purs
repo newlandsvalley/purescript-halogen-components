@@ -95,7 +95,7 @@ main = HA.runHalogenAff do
     recording = unsafePartial $ fromRight erecording
   body <- HA.awaitBody
   -- io <- runUI (component (Just (MidiRecording recording)) instruments) (MidiRecording recording) body
-  io <- runUI (component (MidiRecording recording) instruments) (MidiRecording recording) body
+  io <- runUI (component (MidiRecording recording) instruments) unit body
   {- if we want to change the Playable recording, we can use this:
   _ <- io.query $ H.action $ HandleNewPlayable (MidiRecording recording)
   -}

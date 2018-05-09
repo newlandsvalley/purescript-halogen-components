@@ -71,14 +71,14 @@ type State p =
   , playable :: p                    -- the playable piece of music to convert to a melody
   }
 
--- | here the normal Input parameter is just p (constrained to Playable)
-component :: ∀ eff p. Playable p => p -> Array Instrument -> H.Component HH.HTML (Query p) p Message (Aff (au :: AUDIO | eff))
+-- | In this branch, there is no receiver function or receiver input
+component :: ∀ eff p. Playable p => p -> Array Instrument -> H.Component HH.HTML (Query p) Unit Message (Aff (au :: AUDIO | eff))
 component playable instruments =
   H.component
     { initialState: const (initialState playable instruments)
     , render
     , eval
-    , receiver: HE.input HandleNewPlayable
+    , receiver: const Nothing
     }
   where
 
