@@ -5,14 +5,14 @@ import Prelude
 import Data.Maybe (Maybe(..))
 import Data.List (List(..), elem, filter, reverse, toUnfoldable, (:))
 import Data.Array (cons) as A
-import Control.Monad.Aff (Aff)
+import Effect.Aff (Aff)
 
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.HTML.Core (ClassName(..), HTML)
-import Halogen.MultipleSelectComponent.Dom (SDOM, resetDefaultSelected)
+import Halogen.MultipleSelectComponent.Dom (resetDefaultSelected)
 
 data Query a =
     AddSelection String a
@@ -34,7 +34,7 @@ type State = {
   , selected  :: List String       -- currently selected options
   }
 
-component :: ∀ eff. Context -> State -> H.Component HH.HTML Query Unit Message (Aff (sdom :: SDOM | eff))
+component :: Context -> State -> H.Component HH.HTML Query Unit Message Aff
 component ctx initialState =
   H.component
     { initialState: const $ initialState
@@ -117,28 +117,28 @@ component ctx initialState =
         (map f $ toUnfoldable state.selected)
 
 
-  eval :: ∀ eff. Query ~> H.ComponentDSL State Query Message (Aff (sdom :: SDOM | eff))
+  eval :: Query ~> H.ComponentDSL State Query Message Aff
   eval = case _ of
     AddSelection s next -> do
-      H.modify (\state -> state { selected = addSelection s state.selected })
-      _ <- H.liftEff resetDefaultSelected
+      _ <- H.modify (\state -> state { selected = addSelection s state.selected })
+      _ <- H.liftEffect resetDefaultSelected
       state <- H.get
       -- H.raise $ CurrentSelections state.selected
       pure next
     RemoveSelection s next -> do
-      H.modify (\state -> state { selected = removeSelection s state.selected })
+      _ <- H.modify (\state -> state { selected = removeSelection s state.selected })
       state <- H.get
       -- H.raise $ CurrentSelections state.selected
       pure next
     ClearSelections next -> do
-      H.modify (\state -> state { selected = Nil })
+      _ <- H.modify (\state -> state { selected = Nil })
       -- H.raise $ CurrentSelections Nil
       pure next
     CommitSelections next -> do
       state <- H.get
       let
         selected = state.selected
-      H.modify (\state -> state { selected = Nil })
+      _ <- H.modify (\state -> state { selected = Nil })
       H.raise $ CommittedSelections selected
       pure next
     GetSelections reply -> do

@@ -14,8 +14,8 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.HTML.Core (ClassName(..))
 import Data.MediaType (MediaType)
-import Control.Monad.Aff (Aff)
-import JS.FileIO (FILEIO, Filespec, loadTextFile, loadBinaryFileAsText)
+import Effect.Aff (Aff)
+import JS.FileIO (Filespec, loadTextFile, loadBinaryFileAsText)
 import Halogen (IProp)
 import Halogen.HTML.CSS (style)
 import CSS.Display (display, displayNone)
@@ -41,7 +41,7 @@ type State =
   , isEnabled :: Boolean
   }
 
-component :: forall eff. Context -> H.Component HH.HTML Query Unit Message (Aff (fileio :: FILEIO | eff))
+component :: Context -> H.Component HH.HTML Query Unit Message Aff
 component ctx =
   H.component
     { initialState: const initialState
@@ -80,7 +80,7 @@ component ctx =
           ]
       ]
 
-  eval :: Context -> Query ~> H.ComponentDSL State Query Message (Aff (fileio :: FILEIO | eff))
+  eval :: Context -> Query ~> H.ComponentDSL State Query Message Aff
   eval ctx = case _ of
     LoadFile next -> do
       filespec <-
@@ -88,11 +88,11 @@ component ctx =
            H.liftAff $ loadBinaryFileAsText ctx.componentId
          else
            H.liftAff $ loadTextFile ctx.componentId
-      H.modify (\state -> state { mfsp = Just filespec } )
+      _ <- H.modify (\state -> state { mfsp = Just filespec } )
       H.raise $ FileLoaded filespec
       pure next
     UpdateEnabled isEnabled next -> do
-      H.modify (\state -> state {isEnabled = isEnabled})
+      _ <- H.modify (\state -> state {isEnabled = isEnabled})
       pure next
 
   noDisplayStyle :: ∀ i r. IProp (style :: String | r) i

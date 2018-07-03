@@ -72,5 +72,5 @@ toggledLabelComponent offlabel onLabel =
       H.raise $ Toggled nextState.isOn
       pure next
     UpdateEnabled isEnabled next -> do
-      H.modify (\state -> state {isEnabled = isEnabled})
+      _ <- H.modify (\state -> state {isEnabled = isEnabled})
       pure next

@@ -14,11 +14,11 @@ module Halogen.PlayerComponent where
 
 import Prelude
 
-import Audio.SoundFont (AUDIO, Instrument, playNotes, instrumentChannels)
-import Control.Monad.Aff (Aff, delay)
-import Control.Monad.Aff.Class (class MonadAff)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Class (class MonadEff)
+import Audio.SoundFont (Instrument, playNotes, instrumentChannels)
+import Effect.Aff (Aff, delay)
+import Effect.Aff.Class (class MonadAff)
+import Effect (Effect)
+import Effect.Class (class MonadEffect)
 import Control.Monad.State.Class (class MonadState)
 import Data.Array (null, index, length)
 import Data.Generic.Rep (class Generic)
@@ -72,10 +72,10 @@ type State p =
   }
 
 -- | In this branch, there is no receiver function or receiver input
-component :: ∀ eff p. Playable p => p -> Array Instrument -> H.Component HH.HTML (Query p) Unit Message (Aff (au :: AUDIO | eff))
+component :: ∀ p. Playable p => p -> Array Instrument -> H.Component HH.HTML (Query p) Unit Message Aff
 component playable instruments =
   H.component
-    { initialState: const (initialState playable instruments)
+    { initialState: const initialState
     , render
     , eval
     , receiver: const Nothing
@@ -85,8 +85,8 @@ component playable instruments =
   -- | the initial state of the player
   -- | We can choose to construct it with a Ployable and/or defer to
   -- | the receiver function later on to get hold of it
-  initialState :: ∀ p. Playable p => p -> Array Instrument -> State p
-  initialState playable instruments =
+  initialState :: State p
+  initialState =
     { instruments : instruments
     , melody : []
     , playing : PAUSED
@@ -96,7 +96,7 @@ component playable instruments =
     }
 
 
-  render :: ∀ p. Playable p => State p -> H.ComponentHTML (Query p)
+  render :: Playable p => State p -> H.ComponentHTML (Query p)
   render state =
     let
       sliderPos =
@@ -158,13 +158,13 @@ component playable instruments =
           -}
         ]
 
-  eval :: ∀ eff p. Playable p => (Query p) ~> H.ComponentDSL (State p) (Query p) Message (Aff (au :: AUDIO | eff))
+  eval :: Playable p => (Query p) ~> H.ComponentDSL (State p) (Query p) Message Aff
   eval = case _ of
 
     -- when we change the instruments (possibly im mid-melody) we need to
     -- re-initialise and remove the old melody which will need to be
     -- recomputed with the new instruments (done when play is first pressed)
-    SetInstruments instruments next -> do
+    SetInstruments instruments' next -> do
       state <- H.get
       -- set new state to PENDINGAUSED if we interrupt mid-tune
       let
@@ -173,12 +173,12 @@ component playable instruments =
             then PENDINGPAUSED
           else
             PAUSED
-      H.modify (\state -> state { instruments = instruments
-                                , phraseIndex = 0
-                                , phraseLength = 0.0
-                                , playing = newPlayingState
-                                , melody = []
-                                })
+      _ <- H.modify (\st -> st { instruments = instruments'
+                               , phraseIndex = 0
+                               , phraseLength = 0.0
+                               , playing = newPlayingState
+                               , melody = []
+                               })
       pure next
 
 
@@ -190,13 +190,13 @@ component playable instruments =
       when (null state.melody) do
         establishMelody
 
-      state <- H.get
+      state' <- H.get
 
-      if ((button == PLAYING) && (not (null state.melody)))
+      if ((button == PLAYING) && (not (null state'.melody)))
         then do
           -- play
           H.raise $ IsPlaying true
-          H.modify (\state -> state { playing = PLAYING})
+          _ <- H.modify (\st -> st { playing = PLAYING})
           eval (StepMelody next)
         else do
           -- pause
@@ -222,7 +222,7 @@ component playable instruments =
     -- pressed so as to avoid playing the melody twice simultaneously
     EnablePlayButton next -> do
       H.raise $ IsPlaying false
-      H.modify (\state -> state { playing = PAUSED})
+      _ <- H.modify (\state -> state { playing = PAUSED})
       pure next
 
     -- StopMelody resets the melody index back to the start
@@ -232,52 +232,53 @@ component playable instruments =
       pure next
 
     -- stop then handle a new melody when requested externally
-    HandleNewPlayable playable next -> do
+    HandleNewPlayable playable' next -> do
       state <- H.get
       newState <- stop
-      H.put newState { playable = playable, melody = [] }
+      H.put newState { playable = playable', melody = [] }
       pure next
 
 
 -- establish the melody by conversio from the playable
-establishMelody :: ∀ m eff p.
+establishMelody :: ∀ m p.
   Bind m =>
   Playable p =>
   MonadState (State p) m =>
-  MonadAff eff m =>
+  MonadAff m =>
   m Unit
 establishMelody = do
   state <- H.get
   let
     melody =
       toMelody state.playable (instrumentChannels state.instruments)
-  H.modify (\state -> state { melody = melody})
+  _ <- H.modify (\st -> st { melody = melody})
   pure unit
 
 -- stop the playback
-stop :: ∀ m eff p.
+stop :: ∀ m p.
   Bind m =>
   Playable p =>
   MonadState (State p) m =>
-  MonadAff eff m =>
+  MonadAff m =>
   m (State p)
 stop = do
   state <- H.get
   if (state.playing == PLAYING)
     then do
       _ <- temporarilyFreezePlayButton
-      state <- H.get
-      pure $ state { phraseIndex = 0, playing = PAUSED}
+      state' <- H.get
+      pure $ state' { phraseIndex = 0, playing = PAUSED}
     else do
       pure $ state { phraseIndex = 0, playing = PAUSED}
 
 -- step to the next part of the melody
-step :: forall m eff t64 a p.
+
+step :: forall m a p.
     Bind m =>
     Playable p =>
     MonadState (State p) m =>
-    MonadEff ( au :: AUDIO | t64) m =>
-    MonadAff eff m =>
+    MonadEffect m =>
+    MonadAff m =>
     m ( a -> Query p a)
 step = do
   state <- H.get
@@ -286,7 +287,7 @@ step = do
   case mPhrase of
     Just (midiPhrase) -> do
       -- play the phrase
-      phraseLength <- H.liftEff (playEvent state.instruments midiPhrase)
+      phraseLength <- H.liftEffect (playEvent state.instruments midiPhrase)
       -- step the index and put it into the state
       let
         newState =
@@ -302,11 +303,11 @@ step = do
 
 -- temporarily freeze the play button so that the melody is allowed
 -- (asynchronously) to end before it's re-enabled
-temporarilyFreezePlayButton :: ∀ m eff a p.
+temporarilyFreezePlayButton :: ∀ m a p.
   Bind m =>
   Playable p =>
   MonadState (State p) m =>
-  MonadAff eff m =>
+  MonadAff m =>
   m (a -> Query p a)
 temporarilyFreezePlayButton = do
   state <- H.get
@@ -326,7 +327,7 @@ locateNextPhrase state =
 
 -- | play a MIDI Phrase (a bunch of MIDI notes)
 -- | only NoteOn events produce sound
-playEvent :: ∀ eff. Array Instrument -> MidiPhrase -> Eff (au :: AUDIO | eff) Number
+playEvent :: Array Instrument -> MidiPhrase -> Effect Number
 playEvent instruments midiPhrase =
   playNotes instruments midiPhrase
 
