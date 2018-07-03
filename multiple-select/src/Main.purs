@@ -1,15 +1,15 @@
 module Main where
 
 import Prelude (Unit, bind, unit)
-import Control.Monad.Eff (Eff)
+import Effect (Effect)
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
 import Data.List (List(..), (:))
 
 import Halogen.MultipleSelectComponent (Context, State, component) as MSC
-import Halogen.MultipleSelectComponent.Dom (SDOM)
+import Halogen.MultipleSelectComponent.Dom
 
-main :: Eff (HA.HalogenEffects (sdom :: SDOM)) Unit
+main :: Effect Unit
 main = HA.runHalogenAff do
   let
     initialState :: MSC.State
