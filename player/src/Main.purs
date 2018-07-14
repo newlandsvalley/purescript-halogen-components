@@ -1,9 +1,10 @@
 module Main where
 
-import Audio.SoundFont (AUDIO, Instrument, loadRemoteSoundFonts)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Aff (Aff)
-import Network.HTTP.Affjax (AJAX, affjax, defaultRequest)
+import Audio.SoundFont (Instrument, loadRemoteSoundFonts)
+import Effect (Effect)
+import Effect.Aff (Aff)
+import Network.HTTP.Affjax (affjax, defaultRequest)
+import Network.HTTP.Affjax.Response as Response
 import Data.HTTP.Method (Method(..))
 import Network.HTTP.RequestHeader (RequestHeader(..))
 import Data.MediaType (MediaType(..))
@@ -15,19 +16,17 @@ import Data.ArrayBuffer.DataView (whole)
 import Data.ArrayBuffer.Typed (asUint8Array, toIntArray)
 import Data.Int.Bits (and)
 import Data.Char (fromCharCode)
-import Data.String (fromCharArray)
-import Data.Maybe (Maybe(..))
+import Data.String.CodeUnits (fromCharArray)
+import Data.Maybe (fromMaybe)
 import Halogen as H
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
-import Halogen.PlayerComponent (component, Query(..))
+import Halogen.PlayerComponent (component)
 import Audio.SoundFont.Melody.Class (MidiRecording(..))
 import Prelude (Unit, unit, bind, map, pure, (<>), ($), (<<<))
 import Partial.Unsafe (unsafePartial)
 
-loadInstruments :: ∀ eff .
-  Aff ( ajax :: AJAX, au ::AUDIO | eff)
-    (Array Instrument)
+loadInstruments :: Aff (Array Instrument)
 loadInstruments =
   loadRemoteSoundFonts [ AcousticGrandPiano ]
 
@@ -51,18 +50,14 @@ melodyf =
   (\_ -> [ (phraseSample 0 60), (phraseSample 0 64), (phraseSample 0 67)])
 -}
 
-loadMidi :: ∀ e.
+loadMidi ::
   String
-  -> Aff
-     ( ajax :: AJAX
-     | e
-     )
-     ArrayBuffer
+  -> Aff ArrayBuffer
 loadMidi name = do
   let
     url =
       "midi/" <> name
-  res <- affjax $ defaultRequest
+  res <- affjax  Response.arrayBuffer $ defaultRequest
            { url = url
            , method = Left GET
            , headers = [ Accept (MediaType "audio/midi")]
@@ -82,11 +77,16 @@ toUint8Array ab =
 denormalise :: Uint8Array -> String
 denormalise =
   let
-    f = fromCharCode <<< ((and) 0xFF)
+    f = unsafeFromCharCode <<< ((and) 0xFF)
   in
     fromCharArray <<< map f <<< toIntArray
 
-main :: Eff (HA.HalogenEffects (ajax :: AJAX, au :: AUDIO)) Unit
+unsafeFromCharCode :: Int -> Char
+unsafeFromCharCode i =
+  fromMaybe 'a' $ fromCharCode i
+
+
+main :: Effect Unit
 main = HA.runHalogenAff do
   instruments <- H.liftAff loadInstruments
   midiBytes <- H.liftAff $ loadMidi "lillasystern.midi"
