@@ -9,9 +9,6 @@
     "dist"
   ],
   "dependencies": {
-    "purescript-halogen-components": "https://github.com/newlandsvalley/purescript-halogen-components.git#compiler/0.12"
-  },
-  "resolutions": {
-    "purescript-arraybuffer-types": "^2.0.0"
+    "purescript-halogen-components": "https://github.com/newlandsvalley/purescript-halogen-components.git#0.2.0"
   }
 }
