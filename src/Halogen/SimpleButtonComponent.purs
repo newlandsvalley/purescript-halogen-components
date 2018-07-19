@@ -48,11 +48,11 @@ toggledLabelComponent offlabel onLabel =
     }
 
   render :: String -> String -> State -> H.ComponentHTML Query
-  render offLabel onLabel state =
+  render offLabel onLabel' state =
     let
       label =
         if (state.isOn) then
-          onLabel
+          onLabel'
         else
           offLabel
     in

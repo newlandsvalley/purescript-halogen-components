@@ -38,24 +38,24 @@ component :: Context -> State -> H.Component HH.HTML Query Unit Message Aff
 component ctx initialState =
   H.component
     { initialState: const $ initialState
-    , render: render ctx
+    , render: render
     , eval
     , receiver: const Nothing
     }
   where
 
-  render :: Context -> State -> H.ComponentHTML Query
-  render ctx state =
+  render :: State -> H.ComponentHTML Query
+  render state =
     HH.div
       [ HP.class_ $ ClassName "msSelectDiv" ]
-      [ addSelectionDropdown ctx state
+      [ addSelectionDropdown state
       , viewSelections state
-      , commitSelectionsButton ctx state
+      , commitSelectionsButton state
       ]
 
   -- allow the user to add a selection to the growing multi-select list
-  addSelectionDropdown :: Context -> State -> H.ComponentHTML Query
-  addSelectionDropdown ctx state =
+  addSelectionDropdown :: State -> H.ComponentHTML Query
+  addSelectionDropdown state =
     let
       f :: ∀ p i. String -> HTML p i
       f s =
@@ -78,8 +78,8 @@ component ctx initialState =
             )
         ]
 
-  commitSelectionsButton :: Context -> State -> H.ComponentHTML Query
-  commitSelectionsButton ctx state =
+  commitSelectionsButton :: State -> H.ComponentHTML Query
+  commitSelectionsButton state =
     case state.selected of
       Nil ->
         HH.div_ []
@@ -138,7 +138,7 @@ component ctx initialState =
       state <- H.get
       let
         selected = state.selected
-      _ <- H.modify (\state -> state { selected = Nil })
+      _ <- H.modify (\st -> st { selected = Nil })
       H.raise $ CommittedSelections selected
       pure next
     GetSelections reply -> do
