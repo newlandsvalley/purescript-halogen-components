@@ -7,7 +7,6 @@ import Halogen.VDom.Driver (runUI)
 import Data.List (List(..), (:))
 
 import Halogen.MultipleSelectComponent (Context, State, component) as MSC
-import Halogen.MultipleSelectComponent.Dom
 
 main :: Effect Unit
 main = HA.runHalogenAff do
