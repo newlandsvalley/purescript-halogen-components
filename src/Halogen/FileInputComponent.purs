@@ -19,6 +19,7 @@ import JS.FileIO (Filespec, loadTextFile, loadBinaryFileAsText)
 import Halogen (IProp)
 import Halogen.HTML.CSS (style)
 import CSS.Display (display, displayNone)
+import Halogen.FileInputComponent.Dom (resetInputValue)
 
 
 -- | A simple file input control that wraps JS.FileIO
@@ -77,7 +78,6 @@ component ctx =
           , HP.id_  ctx.componentId
           , HP.accept ctx.accept
           , HP.enabled state.isEnabled
-          , HP.value "" -- rest to allow reselection of the same file
           , noDisplayStyle
           ]
       ]
@@ -91,6 +91,9 @@ component ctx =
          else
            H.liftAff $ loadTextFile ctx.componentId
       _ <- H.modify (\state -> state { mfsp = Just filespec } )
+      -- now reset the file input component value to allow repeat requests
+      -- for the sma efile
+      _ <- H.liftEffect $ resetInputValue ctx.componentId
       H.raise $ FileLoaded filespec
       pure next
     UpdateEnabled isEnabled next -> do
