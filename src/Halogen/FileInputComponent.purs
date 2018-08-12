@@ -20,6 +20,7 @@ import Halogen (IProp)
 import Halogen.HTML.CSS (style)
 import CSS.Display (display, displayNone)
 
+
 -- | A simple file input control that wraps JS.FileIO
 -- | Whether or not it is enabled may be set externally via a query
 
@@ -45,8 +46,8 @@ component :: Context -> H.Component HH.HTML Query Unit Message Aff
 component ctx =
   H.component
     { initialState: const initialState
-    , render: render ctx
-    , eval: eval ctx
+    , render: render
+    , eval: eval
     , receiver: const Nothing
     }
   where
@@ -57,8 +58,8 @@ component ctx =
     , isEnabled : true
     }
 
-  render :: Context  -> State -> H.ComponentHTML Query
-  render ctx state =
+  render :: State -> H.ComponentHTML Query
+  render state =
     HH.span
       [ HP.class_ $ ClassName "fileInput" ]
       [ -- the label is a hack to allow styling of file input which is
@@ -76,12 +77,13 @@ component ctx =
           , HP.id_  ctx.componentId
           , HP.accept ctx.accept
           , HP.enabled state.isEnabled
+          , HP.value "" -- rest to allow reselection of the same file
           , noDisplayStyle
           ]
       ]
 
-  eval :: Context -> Query ~> H.ComponentDSL State Query Message Aff
-  eval ctx = case _ of
+  eval :: Query ~> H.ComponentDSL State Query Message Aff
+  eval = case _ of
     LoadFile next -> do
       filespec <-
          if ctx.isBinary then
