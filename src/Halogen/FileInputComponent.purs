@@ -92,7 +92,7 @@ component ctx =
            H.liftAff $ loadTextFile ctx.componentId
       _ <- H.modify (\state -> state { mfsp = Just filespec } )
       -- now reset the file input component value to allow repeat requests
-      -- for the sma efile
+      -- for the same file
       _ <- H.liftEffect $ resetInputValue ctx.componentId
       H.raise $ FileLoaded filespec
       pure next
