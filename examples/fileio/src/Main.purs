@@ -1,4 +1,4 @@
-module Main where
+module Examples.Fileio.Main where
 
 import Prelude
 

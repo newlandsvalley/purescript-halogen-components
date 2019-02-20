@@ -4,4 +4,8 @@
 /node_modules/
 /output/
 /dist/app.js
+/examples/button/dist/app.js
+/examples/fileio/dist/app.js
+/examples/multiple-select/dist/app.js
+/examples/player/dist/app.js
 /deprecated/

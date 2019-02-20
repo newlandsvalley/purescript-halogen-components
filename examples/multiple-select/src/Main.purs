@@ -1,4 +1,4 @@
-module Main where
+module Examples.MultipleSelect.Main where
 
 import Prelude (Unit, bind, unit)
 import Effect (Effect)

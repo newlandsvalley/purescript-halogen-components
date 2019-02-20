@@ -7,21 +7,28 @@ This module consists of a heterogeneous group of UI components, chosen because t
   * File input select
   * Multiple select dropdown
   * Trivial button
- 
+
 to build
 --------
 
-   bower install
-   
-   pulp build
-  
-to build each example
+     bower install
+
+     pulp build
+
+to build the examples
 ---------------------
 
-   cd to the example
+(after bower install):
 
-   bower install
+     npm run button
 
-   npm run build
+     npm run fileio
 
-   and then navigate to /dist/index.html   
+     npm run multiple-select
+
+     npm run player
+
+To run an example
+-----------------
+
+Navigate using a browser to the _index.html_ file in the appropriate _dist_ directory (e.g. examples/button/dist).

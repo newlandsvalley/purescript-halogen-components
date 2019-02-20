@@ -8,12 +8,3 @@ The player materialises the melody only when the play button is first pressed. T
 allow the player to be rendered even though the user may not wish immediately to play the melody.
 
 The player defines a typeclass __Playable__ which allows any music source to be played if an instance can be defined.  The player itself implements a Midi instance.
-
-to build
---------
-
-   bower install
-
-   npm run build
-
-   and then navigate to /dist/index.html   

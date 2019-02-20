@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "pulp build",
+    "button": "pulp build --main Examples.Button.Main --include examples/button/src --to examples/button/dist/app.js",
+    "fileio": "pulp build --main Examples.Fileio.Main --include examples/fileio/src --to examples/fileio/dist/app.js",
+    "multiple-select": "pulp build --main Examples.MultipleSelect.Main --include examples/multiple-select/src --to examples/multiple-select/dist/app.js",
+    "player": "pulp build --main Examples.Player.Main --include examples/player/src --to examples/player/dist/app.js"
+  },
+  "devDependencies": {
+    "pulp": "^12.3.0",
+    "purescript": "^0.12.0",
+    "purescript-psa": "^0.5.1",
+    "webpack": "^3.6.0"
+  }
+}

@@ -1,4 +1,4 @@
-module Main where
+module Examples.Button.Main where
 
 import Prelude
 
