@@ -38,14 +38,14 @@ data Action = LoadFile
 data Query a =
   UpdateEnabled Boolean a
 
-data Output = FileLoaded Filespec
+data Message = FileLoaded Filespec
 
 type State =
   { mfsp :: Maybe Filespec
   , isEnabled :: Boolean
   }
 
-component :: ∀ i. Context -> H.Component HH.HTML Query i Output Aff
+component :: ∀ i. Context -> H.Component HH.HTML Query i Message Aff
 component ctx =
   H.mkComponent
     { initialState
@@ -89,7 +89,7 @@ component ctx =
           ]
       ]
 
-  handleAction ∷ Action → H.HalogenM State Action () Output Aff Unit
+  handleAction ∷ Action → H.HalogenM State Action () Message Aff Unit
   handleAction = case _ of
     LoadFile -> do
       filespec <-

@@ -26,15 +26,15 @@ data Action = Toggle
 data Query a =
   UpdateEnabled Boolean a
 
-data Output = Toggled Boolean
+data Message = Toggled Boolean
 
 -- | the basic component has a label on the button that never alters
-component :: forall i m. String -> H.Component HH.HTML Query i Output m
+component :: forall i m. String -> H.Component HH.HTML Query i Message m
 component label =
   toggledLabelComponent label label
 
 -- | but the toggled label component toggles between labels each time the button is pressed
-toggledLabelComponent :: forall i m. String -> String -> H.Component HH.HTML Query i Output m
+toggledLabelComponent :: forall i m. String -> String -> H.Component HH.HTML Query i Message m
 toggledLabelComponent offLabel onLabel =
   H.mkComponent
     { initialState
@@ -76,7 +76,7 @@ toggledLabelComponent offLabel onLabel =
       _ <- H.modify (\state -> state {isEnabled = isEnabled})
       pure (Just next)
 
-  handleAction ∷ Action → H.HalogenM State Action () Output m Unit
+  handleAction ∷ Action → H.HalogenM State Action () Message m Unit
   handleAction = case _ of
     Toggle -> do
       state <- H.get

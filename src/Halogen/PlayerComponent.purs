@@ -49,7 +49,7 @@ instance eqEvent :: Eq PlaybackState where
   eq = genericEq
 
 
-data Output = IsPlaying Boolean
+data Message = IsPlaying Boolean
 
 -- actions are those that derive from HTML events
 data Action =
@@ -74,7 +74,7 @@ type State p =
   }
 
 -- | In this branch, there is no receiver function or receiver input
-component :: ∀ p. Playable p => p -> Array Instrument -> H.Component HH.HTML (Query p) Unit Output Aff
+component :: ∀ p. Playable p => p -> Array Instrument -> H.Component HH.HTML (Query p) Unit Message Aff
 component playable instruments =
   H.mkComponent
     { initialState
@@ -169,7 +169,7 @@ component playable instruments =
         ]
 
 
-handleQuery :: forall a p. Playable p => Query p a -> H.HalogenM (State p) Action () Output Aff (Maybe a)
+handleQuery :: forall a p. Playable p => Query p a -> H.HalogenM (State p) Action () Message Aff (Maybe a)
 handleQuery = case _ of
 
   -- when we change the instruments (possibly im mid-melody) we need to
@@ -249,7 +249,7 @@ handleQuery = case _ of
 -- handling an action from HTML events just delegates to the appropriate query
 -- I'm not sure why using unit is kosher for  the query's a param here but it
 -- seems OK.
-handleAction ∷ ∀ p. Playable p => Action → H.HalogenM (State p) Action () Output Aff Unit
+handleAction ∷ ∀ p. Playable p => Action → H.HalogenM (State p) Action () Message Aff Unit
 handleAction = case _ of
   StopMelodyAction -> do
     _ <- handleQuery (StopMelody unit)

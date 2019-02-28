@@ -23,7 +23,7 @@ data Query a =
     ClearSelections a
   | GetSelections (List String -> a)
 
-data Output = CommittedSelections (List String)
+data Message = CommittedSelections (List String)
 
 type Context = {
     selectPrompt       :: String   -- the user instruction on what to select
@@ -36,7 +36,7 @@ type State = {
   , selected  :: List String       -- currently selected options
   }
 
-component :: ∀ i. Context -> (i -> State) -> H.Component HH.HTML Query i Output Aff
+component :: ∀ i. Context -> (i -> State) -> H.Component HH.HTML Query i Message Aff
 component ctx initialState =
   H.mkComponent
     { initialState
@@ -133,7 +133,7 @@ handleQuery = case _ of
     pure (Just $ reply state.selected)
 
 
-handleAction ∷ Action → H.HalogenM State Action () Output Aff Unit
+handleAction ∷ Action → H.HalogenM State Action () Message Aff Unit
 handleAction = case _ of
   AddSelection s -> do
     _ <- H.modify (\state -> state { selected = addSelection s state.selected })
