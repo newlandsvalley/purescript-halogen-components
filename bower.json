@@ -7,7 +7,7 @@
     "output"
   ],
   "dependencies": {
-    "purescript-halogen": "^4.0.0",
+    "purescript-halogen": "https://github.com/slamdata/purescript-halogen.git#5.0.0-rc.1",
     "purescript-halogen-css": "^8.0.0",
     "purescript-css": "^4.0.0",
     "purescript-arraybuffer": "^7.1.0",

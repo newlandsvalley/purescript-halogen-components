@@ -11,31 +11,29 @@ module Halogen.PlayerComponent where
 -- | but all functions that involve these types require the Playable constraint.
 
 
-
 import Prelude
 
 import Audio.SoundFont (Instrument, playNotes, instrumentChannels)
-import Effect.Aff (Aff, delay)
-import Effect.Aff.Class (class MonadAff)
-import Effect (Effect)
-import Effect.Class (class MonadEffect)
+import Audio.SoundFont.Melody (Melody, MidiPhrase)
+import Audio.SoundFont.Melody.Class (class Playable, toMelody)
 import Control.Monad.State.Class (class MonadState)
 import Data.Array (null, index, length)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Eq (genericEq)
 import Data.Generic.Rep.Show (genericShow)
-import Data.Maybe (Maybe(..))
 import Data.Int (toNumber)
+import Data.Maybe (Maybe(..))
 import Data.Time.Duration (Milliseconds(..))
+import Effect (Effect)
+import Effect.Aff (Aff, delay)
+import Effect.Aff.Class (class MonadAff)
+import Effect.Class (class MonadEffect)
 import Halogen as H
 import Halogen.HTML as HH
+import Halogen.HTML.Core (PropName(..))
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-import Halogen.HTML.Core (PropName(..))
-import Halogen.PlayerComponent.Style (capsuleStyle, playerBlockStyle, playerStyle
-  , buttonStyle)
-import Audio.SoundFont.Melody.Class (class Playable, toMelody)
-import Audio.SoundFont.Melody (Melody, MidiPhrase)
+import Halogen.PlayerComponent.Style (capsuleStyle, playerBlockStyle, playerStyle, buttonStyle)
 
 
 -- | now we have tri-state logic for playback state because of the pending status
@@ -51,7 +49,12 @@ instance eqEvent :: Eq PlaybackState where
   eq = genericEq
 
 
-data Message = IsPlaying Boolean
+data Output = IsPlaying Boolean
+
+-- actions are those that derive from HTML events
+data Action =
+    PlayMelodyAction PlaybackState           -- invoke play | pause
+  | StopMelodyAction                         -- invoke stop
 
 data Query p a =
     SetInstruments (Array Instrument) a
@@ -60,7 +63,6 @@ data Query p a =
   | StopMelody a                           -- stop and set index to zero
   | EnablePlayButton a                     -- re-enable the play button
   | HandleNewPlayable p a                  -- obtain a new melody to play
-
 
 type State p =
   { instruments :: Array Instrument  -- the instrument soundfonts available
@@ -72,21 +74,25 @@ type State p =
   }
 
 -- | In this branch, there is no receiver function or receiver input
-component :: ∀ p. Playable p => p -> Array Instrument -> H.Component HH.HTML (Query p) Unit Message Aff
+component :: ∀ p. Playable p => p -> Array Instrument -> H.Component HH.HTML (Query p) Unit Output Aff
 component playable instruments =
-  H.component
-    { initialState: const initialState
+  H.mkComponent
+    { initialState
     , render
-    , eval
-    , receiver: const Nothing
+    , eval: H.mkEval $ H.defaultEval
+        { handleAction = handleAction
+        , handleQuery = handleQuery
+        , initialize = Nothing
+        , finalize = Nothing
+        }
     }
   where
 
   -- | the initial state of the player
-  -- | We can choose to construct it with a Ployable and/or defer to
+  -- | We can choose to construct it with a Playable and/or defer to
   -- | the receiver function later on to get hold of it
-  initialState :: State p
-  initialState =
+  initialState :: ∀ i. i -> State p
+  initialState _ =
     { instruments : instruments
     , melody : []
     , playing : PAUSED
@@ -96,7 +102,7 @@ component playable instruments =
     }
 
 
-  render :: Playable p => State p -> H.ComponentHTML (Query p)
+  render :: State p -> H.ComponentHTML Action () Aff
   render state =
     let
       sliderPos =
@@ -112,9 +118,9 @@ component playable instruments =
       -- the action toggles the PLAYING - PAUSED status
       playAction =
         if (state.playing == PLAYING) then
-           PlayMelody PAUSED
+           PlayMelodyAction PAUSED
         else
-           PlayMelody PLAYING
+           PlayMelodyAction PLAYING
       playButtonImg =
         if (state.playing == PAUSED) then
           startImg
@@ -126,23 +132,27 @@ component playable instruments =
       isDisabled =
         (state.playing == PENDINGPAUSED)
     in
-      HH.div [ playerBlockStyle ]
-        [ HH.div [ playerStyle ]
+      HH.div
+        [ playerBlockStyle ]
+        [ HH.div
+          [ playerStyle ]
           [
 
-                 -- , playerStyle
+            -- , playerStyle
             HH.input
               [ HP.type_ HP.InputImage
               , HP.disabled isDisabled
               , HP.src playButtonImg
-              , HE.onClick (HE.input_ playAction)
+              , HE.onClick (\_ -> Just playAction)
+              --, HE.onClick (HE.input_ playAction)
               , buttonStyle
               ]
           ,  HH.input
               [ HP.type_ HP.InputImage
               , HP.disabled isDisabled
               , HP.src stopImg
-              , HE.onClick (HE.input_ StopMelody)
+              , HE.onClick \_ -> Just StopMelodyAction
+              --, HE.onClick (\_ -> Just (EvalQuery StopMelody))
               , buttonStyle
               ]
           , HH.progress
@@ -158,13 +168,14 @@ component playable instruments =
           -}
         ]
 
-  eval :: Playable p => (Query p) ~> H.ComponentDSL (State p) (Query p) Message Aff
-  eval = case _ of
 
-    -- when we change the instruments (possibly im mid-melody) we need to
-    -- re-initialise and remove the old melody which will need to be
-    -- recomputed with the new instruments (done when play is first pressed)
-    SetInstruments instruments' next -> do
+handleQuery :: forall a p. Playable p => Query p a -> H.HalogenM (State p) Action () Output Aff (Maybe a)
+handleQuery = case _ of
+
+  -- when we change the instruments (possibly im mid-melody) we need to
+  -- re-initialise and remove the old melody which will need to be
+  -- recomputed with the new instruments (done when play is first pressed)
+  SetInstruments instruments' next -> do
       state <- H.get
       -- set new state to PENDINGAUSED if we interrupt mid-tune
       let
@@ -179,67 +190,75 @@ component playable instruments =
                                , playing = newPlayingState
                                , melody = []
                                })
-      pure next
+      pure (Just next)
 
+  PlayMelody button next -> do
+    state <- H.get
 
-    -- PlayMelody responds to the toggled button PLAY/PAUSE
-    -- however it also establishes the melody on first reference
-    PlayMelody button next -> do
-      state <- H.get
+    when (null state.melody) do
+      establishMelody
 
-      when (null state.melody) do
-        establishMelody
+    state' <- H.get
 
-      state' <- H.get
+    if ((button == PLAYING) && (not (null state'.melody)))
+      then do
+        -- play
+        H.raise $ IsPlaying true
+        _ <- H.modify (\st -> st { playing = PLAYING})
+        handleQuery (StepMelody next)
+      else do
+        -- pause
+        nextInstruction <- temporarilyFreezePlayButton
+        handleQuery (nextInstruction next)
 
-      if ((button == PLAYING) && (not (null state'.melody)))
-        then do
-          -- play
-          H.raise $ IsPlaying true
-          _ <- H.modify (\st -> st { playing = PLAYING})
-          eval (StepMelody next)
-        else do
-          -- pause
-          nextInstruction <- temporarilyFreezePlayButton
-          eval (nextInstruction next)
+  -- StepMelody plays the current phrase and then steps the pointer to the next one
+  -- it must respect any button presses in between steps
+  StepMelody next -> do
+    state <- H.get
 
-    -- StepMelody plays the current phrase and then steps the pointer to the next one
-    -- it must respect any button presses in between steps
-    StepMelody next -> do
-      state <- H.get
+    if ((state.playing == PLAYING) && (not (null state.melody)))
+      then do
+        -- play
+        nextInstruction <- step
+        handleQuery (nextInstruction next)
+      else do
+        -- pause
+        nextInstruction <- temporarilyFreezePlayButton
+        handleQuery (nextInstruction next)
 
-      if ((state.playing == PLAYING) && (not (null state.melody)))
-        then do
-          -- play
-          nextInstruction <- step
-          eval (nextInstruction next)
-        else do
-          -- pause
-          nextInstruction <- temporarilyFreezePlayButton
-          eval (nextInstruction next)
+  -- EnablePlayButton unfreezes the play button which is frozen after being
+  -- pressed so as to avoid playing the melody twice simultaneously
+  EnablePlayButton next -> do
+    H.raise $ IsPlaying false
+    _ <- H.modify (\state -> state { playing = PAUSED})
+    pure (Just next)
 
-    -- EnablePlayButton unfreezes the play button which is frozen after being
-    -- pressed so as to avoid playing the melody twice simultaneously
-    EnablePlayButton next -> do
-      H.raise $ IsPlaying false
-      _ <- H.modify (\state -> state { playing = PAUSED})
-      pure next
+  -- StopMelody resets the melody index back to the start
+  StopMelody next -> do
+    newState <- stop
+    H.put newState
+    pure (Just next)
 
-    -- StopMelody resets the melody index back to the start
-    StopMelody next -> do
-      newState <- stop
-      H.put newState
-      pure next
+  -- stop then handle a new melody when requested externally
+  HandleNewPlayable playable' next -> do
+    state <- H.get
+    newState <- stop
+    H.put newState { playable = playable', melody = [] }
+    pure (Just next)
 
-    -- stop then handle a new melody when requested externally
-    HandleNewPlayable playable' next -> do
-      state <- H.get
-      newState <- stop
-      H.put newState { playable = playable', melody = [] }
-      pure next
+-- handling an action from HTML events just delegates to the appropriate query
+-- I'm not sure why using unit is kosher for  the query's a param here but it
+-- seems OK.
+handleAction ∷ ∀ p. Playable p => Action → H.HalogenM (State p) Action () Output Aff Unit
+handleAction = case _ of
+  StopMelodyAction -> do
+    _ <- handleQuery (StopMelody unit)
+    pure unit
+  PlayMelodyAction playbackState -> do
+    _ <- handleQuery (PlayMelody playbackState unit)
+    pure unit
 
-
--- establish the melody by conversio from the playable
+-- establish the melody by conversion from the playable
 establishMelody :: ∀ m p.
   Bind m =>
   Playable p =>
@@ -272,7 +291,6 @@ stop = do
       pure $ state { phraseIndex = 0, playing = PAUSED}
 
 -- step to the next part of the melody
-
 step :: forall m a p.
     Bind m =>
     Playable p =>

@@ -11,8 +11,8 @@ import Halogen.MultipleSelectComponent (Context, State, component) as MSC
 main :: Effect Unit
 main = HA.runHalogenAff do
   let
-    initialState :: MSC.State
-    initialState =
+    initialState :: ∀ i. i -> MSC.State
+    initialState _ =
       { available : ("piano" : "guitar" : "mandolin" : "bouzouki" : Nil)
       , selected : Nil
       }

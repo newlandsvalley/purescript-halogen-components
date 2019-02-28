@@ -4,7 +4,7 @@ import Prelude
 
 import Effect (Effect)
 import Effect.Console (log)
-import Halogen.SimpleButtonComponent (toggledLabelComponent, Message(..)) as B
+import Halogen.SimpleButtonComponent (toggledLabelComponent, Output(..)) as B
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
 import Halogen (liftEffect)

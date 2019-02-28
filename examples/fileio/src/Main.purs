@@ -4,12 +4,13 @@ import Prelude
 
 import Effect (Effect)
 import Effect.Console (log)
-import Halogen.FileInputComponent (component, Message(..)) as FI
+import Halogen.FileInputComponent (component, Output(..)) as FI
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
 import Halogen (liftEffect)
 import Control.Coroutine as CR
 import Data.MediaType (MediaType(..))
+import DOM.HTML.Indexed.InputAcceptType (mediaType)
 import Data.Maybe (Maybe(..))
 
 main :: Effect Unit
@@ -18,7 +19,7 @@ main = HA.runHalogenAff
     ctx = { componentId : "midiinput"
           , isBinary : true
           , prompt : "load a midi file"
-          , accept : MediaType ".midi, .mid"
+          , accept : mediaType (MediaType ".midi, .mid")
           }
     {-}
     ctx = { componentId : "abcinput"

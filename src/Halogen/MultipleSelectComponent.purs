@@ -14,14 +14,16 @@ import Halogen.HTML.Properties as HP
 import Halogen.HTML.Core (ClassName(..), HTML)
 import Halogen.MultipleSelectComponent.Dom (resetDefaultSelected)
 
+data Action =
+    AddSelection String
+  | RemoveSelection String
+  | CommitSelections
+
 data Query a =
-    AddSelection String a
-  | RemoveSelection String a
-  | ClearSelections a
-  | CommitSelections a
+    ClearSelections a
   | GetSelections (List String -> a)
 
-data Message = CommittedSelections (List String)
+data Output = CommittedSelections (List String)
 
 type Context = {
     selectPrompt       :: String   -- the user instruction on what to select
@@ -34,17 +36,21 @@ type State = {
   , selected  :: List String       -- currently selected options
   }
 
-component :: Context -> State -> H.Component HH.HTML Query Unit Message Aff
+component :: ∀ i. Context -> (i -> State) -> H.Component HH.HTML Query i Output Aff
 component ctx initialState =
-  H.component
-    { initialState: const $ initialState
-    , render: render
-    , eval
-    , receiver: const Nothing
+  H.mkComponent
+    { initialState
+    , render
+    , eval: H.mkEval $ H.defaultEval
+        { handleAction = handleAction
+        , handleQuery = handleQuery
+        , initialize = Nothing
+        , finalize = Nothing
+        }
     }
   where
 
-  render :: State -> H.ComponentHTML Query
+  render :: State -> H.ComponentHTML Action () Aff
   render state =
     HH.div
       [ HP.class_ $ ClassName "msSelectDiv" ]
@@ -54,10 +60,10 @@ component ctx initialState =
       ]
 
   -- allow the user to add a selection to the growing multi-select list
-  addSelectionDropdown :: State -> H.ComponentHTML Query
+  addSelectionDropdown :: State -> H.ComponentHTML Action () Aff
   addSelectionDropdown state =
     let
-      f :: ∀ p i. String -> HTML p i
+      f :: ∀ p j. String -> HTML p j
       f s =
           HH.option
             [ HP.disabled (elem s state.selected) ]
@@ -70,7 +76,7 @@ component ctx initialState =
             [ HP.class_ $ ClassName "msAddSelection"
             , HP.id_  "selection-menu"
             , HP.value ctx.selectPrompt
-            , HE.onValueChange  (HE.input AddSelection)
+            , HE.onValueChange  (Just <<< AddSelection)
             ]
             (A.cons
               (HH.option [ HP.disabled true ] [ HH.text ctx.selectPrompt])
@@ -78,7 +84,7 @@ component ctx initialState =
             )
         ]
 
-  commitSelectionsButton :: State -> H.ComponentHTML Query
+  commitSelectionsButton :: State -> H.ComponentHTML Action () Aff
   commitSelectionsButton state =
     case state.selected of
       Nil ->
@@ -91,12 +97,13 @@ component ctx initialState =
              [ HH.text ctx.commitPrompt ]
           , HH.button
              [ HP.class_ $ ClassName "msCommit hoverable"
-             , HE.onClick (HE.input_ CommitSelections) ]
+             , HE.onClick (\_ -> Just CommitSelections)
+             ]
              [ HH.text ctx.commitButtonText ]
           ]
 
   -- list the currently selected options
-  viewSelections :: State -> H.ComponentHTML Query
+  viewSelections :: State -> H.ComponentHTML Action () Aff
   viewSelections state =
     let
       -- f :: ∀ p i. String -> HTML p i
@@ -108,7 +115,7 @@ component ctx initialState =
               [ HH.text s]
           , HH.a
               [ HP.class_ $ ClassName  "msListItemRemove"
-              , HE.onClick (HE.input_ (RemoveSelection s))
+              , HE.onClick (\_ -> Just $ RemoveSelection s)
               ]
               [ HH.text " remove"]
           ]
@@ -116,34 +123,30 @@ component ctx initialState =
       HH.div_
         (map f $ toUnfoldable state.selected)
 
+handleQuery :: forall o m a. Query a -> H.HalogenM State Action () o m (Maybe a)
+handleQuery = case _ of
+  ClearSelections next -> do
+    _ <- H.modify (\state -> state { selected = Nil })
+    pure (Just next)
+  GetSelections reply -> do
+    state <- H.get
+    pure (Just $ reply state.selected)
 
-  eval :: Query ~> H.ComponentDSL State Query Message Aff
-  eval = case _ of
-    AddSelection s next -> do
-      _ <- H.modify (\state -> state { selected = addSelection s state.selected })
-      _ <- H.liftEffect resetDefaultSelected
-      state <- H.get
-      -- H.raise $ CurrentSelections state.selected
-      pure next
-    RemoveSelection s next -> do
-      _ <- H.modify (\state -> state { selected = removeSelection s state.selected })
-      state <- H.get
-      -- H.raise $ CurrentSelections state.selected
-      pure next
-    ClearSelections next -> do
-      _ <- H.modify (\state -> state { selected = Nil })
-      -- H.raise $ CurrentSelections Nil
-      pure next
-    CommitSelections next -> do
-      state <- H.get
-      let
-        selected = state.selected
-      _ <- H.modify (\st -> st { selected = Nil })
-      H.raise $ CommittedSelections selected
-      pure next
-    GetSelections reply -> do
-      state <- H.get
-      pure (reply state.selected)
+
+handleAction ∷ Action → H.HalogenM State Action () Output Aff Unit
+handleAction = case _ of
+  AddSelection s -> do
+    _ <- H.modify (\state -> state { selected = addSelection s state.selected })
+    H.liftEffect resetDefaultSelected
+  RemoveSelection s  -> do
+    _ <- H.modify (\state -> state { selected = removeSelection s state.selected })
+    pure unit
+  CommitSelections -> do
+    state <- H.get
+    let
+      selected = state.selected
+    _ <- H.modify (\st -> st { selected = Nil })
+    H.raise $ CommittedSelections selected
 
 
 -- add a selection to the end of the list

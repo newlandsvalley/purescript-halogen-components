@@ -16,7 +16,8 @@ import CSS.Display (display, inlineBlock)
 import CSS.Geometry (width, height, margin)
 import CSS.Overflow (hidden, overflow)
 import CSS.Size (px)
-import Halogen (IProp)
+-- import Halogen (IProp)
+import Halogen.HTML.Properties (IProp)
 import Halogen.HTML.CSS (style)
 
 centreStyle :: ∀ i r. IProp (style :: String | r) i
