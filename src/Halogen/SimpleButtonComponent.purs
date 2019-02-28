@@ -16,6 +16,8 @@ import Halogen.HTML.Core (ClassName(..))
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 
+type Slot = H.Slot Query Message
+
 type State =
   { isOn :: Boolean
   , isEnabled :: Boolean

@@ -35,6 +35,7 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.PlayerComponent.Style (capsuleStyle, playerBlockStyle, playerStyle, buttonStyle)
 
+type Slot p = H.Slot (Query p) Message
 
 -- | now we have tri-state logic for playback state because of the pending status
 data PlaybackState =

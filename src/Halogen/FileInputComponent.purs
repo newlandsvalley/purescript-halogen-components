@@ -22,9 +22,10 @@ import Halogen.HTML.CSS (style)
 import CSS.Display (display, displayNone)
 import Halogen.FileInputComponent.Dom (resetInputValue)
 
-
 -- | A simple file input control that wraps JS.FileIO
 -- | Whether or not it is enabled may be set externally via a query
+
+type Slot = H.Slot Query Message
 
 type Context = {
     componentId :: String     -- the component id

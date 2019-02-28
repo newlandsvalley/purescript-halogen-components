@@ -14,6 +14,8 @@ import Halogen.HTML.Properties as HP
 import Halogen.HTML.Core (ClassName(..), HTML)
 import Halogen.MultipleSelectComponent.Dom (resetDefaultSelected)
 
+type Slot = H.Slot Query Message
+
 data Action =
     AddSelection String
   | RemoveSelection String
