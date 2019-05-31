@@ -25,7 +25,7 @@ import Data.Int (toNumber)
 import Data.Maybe (Maybe(..))
 import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
-import Effect.Aff (Aff, delay)
+import Effect.Aff (delay)
 import Effect.Aff.Class (class MonadAff)
 import Effect.Class (class MonadEffect)
 import Halogen as H
@@ -75,7 +75,12 @@ type State p =
   }
 
 -- | In this branch, there is no receiver function or receiver input
-component :: ∀ p. Playable p => p -> Array Instrument -> H.Component HH.HTML (Query p) Unit Message Aff
+component :: ∀ p m.
+  Playable p =>
+  MonadAff m =>
+  p ->
+  Array Instrument ->
+  H.Component HH.HTML (Query p) Unit Message m
 component playable instruments =
   H.mkComponent
     { initialState
@@ -103,7 +108,7 @@ component playable instruments =
     }
 
 
-  render :: State p -> H.ComponentHTML Action () Aff
+  render :: State p -> H.ComponentHTML Action () m
   render state =
     let
       sliderPos =
@@ -170,7 +175,11 @@ component playable instruments =
         ]
 
 
-handleQuery :: forall a p. Playable p => Query p a -> H.HalogenM (State p) Action () Message Aff (Maybe a)
+handleQuery :: forall a m p.
+  MonadAff m =>
+  Playable p =>
+  Query p a ->
+  H.HalogenM (State p) Action () Message m (Maybe a)
 handleQuery = case _ of
 
   -- when we change the instruments (possibly im mid-melody) we need to
@@ -250,7 +259,11 @@ handleQuery = case _ of
 -- handling an action from HTML events just delegates to the appropriate query
 -- I'm not sure why using unit is kosher for  the query's a param here but it
 -- seems OK.
-handleAction ∷ ∀ p. Playable p => Action → H.HalogenM (State p) Action () Message Aff Unit
+handleAction ∷ ∀ m p.
+  MonadAff m =>
+  Playable p =>
+  Action →
+  H.HalogenM (State p) Action () Message m Unit
 handleAction = case _ of
   StopMelodyAction -> do
     _ <- handleQuery (StopMelody unit)

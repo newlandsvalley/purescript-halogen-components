@@ -5,7 +5,7 @@ import Prelude
 import Data.Maybe (Maybe(..))
 import Data.List (List(..), elem, filter, reverse, toUnfoldable, (:))
 import Data.Array (cons) as A
-import Effect.Aff (Aff)
+import Effect.Aff.Class (class MonadAff)
 
 import Halogen as H
 import Halogen.HTML as HH
@@ -38,7 +38,7 @@ type State = {
   , selected  :: List String       -- currently selected options
   }
 
-component :: ∀ i. Context -> (i -> State) -> H.Component HH.HTML Query i Message Aff
+component :: ∀ i m. MonadAff m => Context -> (i -> State) -> H.Component HH.HTML Query i Message m
 component ctx initialState =
   H.mkComponent
     { initialState
@@ -52,7 +52,7 @@ component ctx initialState =
     }
   where
 
-  render :: State -> H.ComponentHTML Action () Aff
+  render :: State -> H.ComponentHTML Action () m
   render state =
     HH.div
       [ HP.class_ $ ClassName "msSelectDiv" ]
@@ -62,7 +62,7 @@ component ctx initialState =
       ]
 
   -- allow the user to add a selection to the growing multi-select list
-  addSelectionDropdown :: State -> H.ComponentHTML Action () Aff
+  addSelectionDropdown :: State -> H.ComponentHTML Action () m
   addSelectionDropdown state =
     let
       f :: ∀ p j. String -> HTML p j
@@ -86,7 +86,7 @@ component ctx initialState =
             )
         ]
 
-  commitSelectionsButton :: State -> H.ComponentHTML Action () Aff
+  commitSelectionsButton :: State -> H.ComponentHTML Action () m
   commitSelectionsButton state =
     case state.selected of
       Nil ->
@@ -105,7 +105,7 @@ component ctx initialState =
           ]
 
   -- list the currently selected options
-  viewSelections :: State -> H.ComponentHTML Action () Aff
+  viewSelections :: State -> H.ComponentHTML Action () m
   viewSelections state =
     let
       -- f :: ∀ p i. String -> HTML p i
@@ -135,7 +135,7 @@ handleQuery = case _ of
     pure (Just $ reply state.selected)
 
 
-handleAction ∷ Action → H.HalogenM State Action () Message Aff Unit
+handleAction ∷ ∀ m. MonadAff m => Action → H.HalogenM State Action () Message m Unit
 handleAction = case _ of
   AddSelection s -> do
     _ <- H.modify (\state -> state { selected = addSelection s state.selected })

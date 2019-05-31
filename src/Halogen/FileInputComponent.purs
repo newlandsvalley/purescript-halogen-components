@@ -8,6 +8,7 @@ import Prelude
 
 import Data.Maybe (Maybe(..))
 
+import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
@@ -15,7 +16,6 @@ import Halogen.HTML.Properties as HP
 import Halogen.HTML.Core (ClassName(..))
 -- import Data.MediaType (MediaType)
 import DOM.HTML.Indexed.InputAcceptType (InputAcceptType)
-import Effect.Aff (Aff)
 import JS.FileIO (Filespec, loadTextFile, loadBinaryFileAsText)
 import Halogen.HTML.Properties (IProp)
 import Halogen.HTML.CSS (style)
@@ -46,7 +46,7 @@ type State =
   , isEnabled :: Boolean
   }
 
-component :: ∀ i. Context -> H.Component HH.HTML Query i Message Aff
+component :: ∀ i m. MonadAff m => Context -> H.Component HH.HTML Query i Message m
 component ctx =
   H.mkComponent
     { initialState
@@ -66,7 +66,7 @@ component ctx =
     , isEnabled : true
     }
 
-  render :: State -> H.ComponentHTML Action () Aff
+  render :: State -> H.ComponentHTML Action () m
   render state =
     HH.span
       [ HP.class_ $ ClassName "fileInput" ]
@@ -90,7 +90,7 @@ component ctx =
           ]
       ]
 
-  handleAction ∷ Action → H.HalogenM State Action () Message Aff Unit
+  handleAction ∷ Action → H.HalogenM State Action () Message m Unit
   handleAction = case _ of
     LoadFile -> do
       filespec <-
