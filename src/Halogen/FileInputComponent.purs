@@ -104,7 +104,7 @@ component ctx =
       _ <- H.liftEffect $ resetInputValue ctx.componentId
       H.raise $ FileLoaded filespec
 
-  handleQuery :: forall o m a. Query a -> H.HalogenM State Action () o m (Maybe a)
+  handleQuery :: forall o a. Query a -> H.HalogenM State Action () o m (Maybe a)
   handleQuery = case _ of
     UpdateEnabled isEnabled next -> do
       _ <- H.modify (\state -> state {isEnabled = isEnabled})
