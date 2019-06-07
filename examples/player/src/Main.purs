@@ -3,12 +3,15 @@ module Examples.Player.Main where
 import Audio.SoundFont (Instrument, loadRemoteSoundFonts)
 import Effect (Effect)
 import Effect.Aff (Aff)
-import Network.HTTP.Affjax (affjax, defaultRequest)
-import Network.HTTP.Affjax.Response as Response
+import Effect.Class (liftEffect)
+import Effect.Console (log)
+import Affjax (request, defaultRequest)
+import Affjax.ResponseFormat as ResponseFormat
 import Data.HTTP.Method (Method(..))
-import Network.HTTP.RequestHeader (RequestHeader(..))
+import Affjax.RequestHeader (RequestHeader(..))
 import Data.MediaType (MediaType(..))
 import Data.ArrayBuffer.Types (ArrayBuffer, Uint8Array)
+import Data.ArrayBuffer.ArrayBuffer (fromArray)
 import Data.Midi.Instrument (InstrumentName(..))
 import Data.Midi.Parser (normalise, parse)
 import Data.Either (Either(..), fromRight)
@@ -57,12 +60,19 @@ loadMidi name = do
   let
     url =
       "midi/" <> name
-  res <- affjax  Response.arrayBuffer $ defaultRequest
+  res <- request $ defaultRequest
            { url = url
            , method = Left GET
+           , responseFormat = ResponseFormat.arrayBuffer
            , headers = [ Accept (MediaType "audio/midi")]
            }
-  pure $ res.response
+  case res.body of
+    Left err -> do
+      _ <- liftEffect $ log "MIDI failed to load"
+      pure $ fromArray []
+    Right body ->
+      --log $ "GET /api response: " <> J.stringify json
+      pure body
 
 toUint8Array :: ArrayBuffer ->  Uint8Array
 toUint8Array ab =
