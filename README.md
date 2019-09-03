@@ -3,7 +3,8 @@ halogen-components
 
 This module consists of a heterogeneous group of UI components, chosen because they are of use in building various music player or editor applications.  Currently we have:
 
-  * Soundfont melody player
+  * Soundfont melody player (with UI)
+  * Thumbnail melody player (no UI)
   * File input select
   * Multiple select dropdown
   * Trivial button
