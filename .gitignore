@@ -8,4 +8,9 @@
 /examples/fileio/dist/app.js
 /examples/multiple-select/dist/app.js
 /examples/player/dist/app.js
+/examples/thumbnail-player/bower_components/
+/examples/thumbnail-player/node_modules/
+/examples/thumbnail-player/output/
+/examples/thumbnail-player/.*
+/examples/thumbnail-player/dist/app.js
 /deprecated/

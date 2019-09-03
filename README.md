@@ -16,8 +16,18 @@ to build
 
      pulp build
 
-to build the examples
----------------------
+
+to build the thumbnail player example
+-------------------------------------
+
+     cd to examples/thumbnail-player 
+
+     bower install 
+
+     npm run build
+
+to build the other examples
+---------------------------
 
 (after bower install):
 
