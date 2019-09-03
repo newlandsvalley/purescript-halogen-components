@@ -100,12 +100,7 @@ handleQuery = case _ of
   PlayMelody melody next -> do
     -- stop any previously playing melody
     _ <- stop
-    -- delay for a bit - we seem to have something of a race problem -
-    -- perhaps the browser is caching something from the last play?
-    -- and in any case we need to wait for the phrase length to finish
-    -- before the last thumbnail melody stops.
-    _ <-  H.liftAff $ delay (Milliseconds 500.0)
-
+    
     if (not (null melody))
       then do
         -- play

@@ -31,6 +31,7 @@ type State =
     tuneList :: Array String
   , instruments :: Array Instrument
   , vexRenderers :: Array Renderer
+  , rendered :: Boolean
   }
 
 data Query a =
@@ -92,6 +93,7 @@ component =
      { tuneList : [ augustsson, fastan ]
      , instruments : instruments
      , vexRenderers : []
+     , rendered : false
      }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
@@ -100,16 +102,27 @@ component =
       [ HH.slot _thumbnailPlayer unit TNP.component { instruments : state.instruments } absurd
       , renderTuneList state
       , renderAddThumbnailsButton state
+      , instructions state
       ]
 
   renderAddThumbnailsButton :: State -> H.ComponentHTML Action ChildSlots m
   renderAddThumbnailsButton state =
+    if (state.rendered) then
+      HH.text ""
+    else
       HH.button
         [ HE.onClick \_ -> Just AddThumbnails
         , css "hoverable"
         , HP.enabled true
         ]
         [ HH.text "add thumbnails" ]
+
+  instructions :: State -> H.ComponentHTML Action ChildSlots m
+  instructions state =
+    if (state.rendered) then
+      HH.text "click on a thumbnail to hear it"
+    else
+      HH.text ""
 
   renderTuneList :: State -> H.ComponentHTML Action ChildSlots m
   renderTuneList state =
@@ -132,7 +145,7 @@ component =
             [ HH.div
               [ HP.id_ ("canvas" <> show index)
               , HE.onMouseLeave \_ -> Just StopThumbnail
-              , HE.onMouseEnter \_ -> Just (PlayThumbnail index)
+              , HE.onMouseDown \_ -> Just (PlayThumbnail index)
               , css "thumbnail"
               ]
               []
@@ -145,6 +158,7 @@ component =
     AddThumbnails -> do
       _ <- handleQuery (InitializeVex unit)
       _ <- handleQuery (Thumbnail 0 unit)
+      _ <- H.modify_ (\st -> st { rendered = true } )
       pure unit
 
     PlayThumbnail idx -> do
