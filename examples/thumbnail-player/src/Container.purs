@@ -165,7 +165,7 @@ component =
       pure unit
 
     PlayThumbnail idx -> do
-      _ <- H.query _thumbnailPlayer unit $ H.tell TNP.StopMelody
+      -- _ <- H.query _thumbnailPlayer unit $ H.tell TNP.StopMelody
       state <- H.get
       let
         foo = spy "PlayThumbnail - instruments number" (length state.instruments)
