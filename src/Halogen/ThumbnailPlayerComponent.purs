@@ -1,5 +1,6 @@
 module Halogen.ThumbnailPlayerComponent
   ( Query(..)
+  , Message
   , Slot
   , component) where
 
@@ -41,6 +42,8 @@ instance eqEvent :: Eq PlaybackState where
 type Input =
   { instruments :: Array Instrument }
 
+data Message = IsPlaying Boolean
+
 -- actions are those that usually derive from HTML events but we have no HTML!
 -- only used here to enamle receive and finalize.
 data Action =
@@ -60,9 +63,9 @@ type State =
   , phraseLength :: Number           -- the duration of the phrase currently playing
   }
 
-component :: ∀ o m.
+component :: ∀ m.
   MonadAff m =>
-  H.Component HH.HTML Query Input o m
+  H.Component HH.HTML Query Input Message m
 component =
   H.mkComponent
     { initialState
@@ -91,20 +94,21 @@ component =
   render state =
     HH.text ""
 
-handleQuery :: forall a o m.
+handleQuery :: forall a m.
   MonadAff m =>
   Query a ->
-  H.HalogenM State Action () o m (Maybe a)
+  H.HalogenM State Action () Message m (Maybe a)
 handleQuery = case _ of
 
   PlayMelody melody next -> do
     -- stop any previously playing melody
     _ <- stop
-    
+
     if (not (null melody))
       then do
         -- play
         _ <- H.modify (\st -> st { phraseIndex = 0, playing = PLAYING, melody = melody })
+        H.raise $ IsPlaying true
         _ <- handleQuery (StepMelody unit)
         pure (Just next)
       else do
@@ -125,13 +129,14 @@ handleQuery = case _ of
 
   StopMelody next -> do
     _ <- stop
+    H.raise $ IsPlaying false
     pure (Just next)
 
 -- handling an action just delegates to the appropriate query
-handleAction ∷ ∀ o m.
+handleAction ∷ ∀ m.
   MonadAff m =>
   Action →
-  H.HalogenM State Action () o m Unit
+  H.HalogenM State Action () Message m Unit
 handleAction = case _ of
 
   -- just here so we can invoke it from the finalizer
