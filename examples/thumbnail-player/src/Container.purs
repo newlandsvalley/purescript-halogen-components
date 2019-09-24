@@ -32,6 +32,7 @@ type State =
   , instruments :: Array Instrument
   , vexRenderers :: Array Renderer
   , rendered :: Boolean
+  , isThumbnailPlaying :: Boolean
   }
 
 data Query a =
@@ -95,6 +96,7 @@ component =
      , instruments : instruments
      , vexRenderers : []
      , rendered : false
+     , isThumbnailPlaying : false
      }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
@@ -165,18 +167,28 @@ component =
     PlayThumbnail idx -> do
       _ <- H.query _thumbnailPlayer unit $ H.tell TNP.StopMelody
       state <- H.get
+      let
+        foo = spy "PlayThumbnail - instruments number" (length state.instruments)
       if (idx >= (length $ state.tuneList) )
+      -- if ((idx >= (length $ state.tuneList) )  || state.isThumbnailPlaying)
         then do
           pure unit
         else do
           let
             abc = unsafePartial $ unsafeIndex state.tuneList idx
             melody = getThumbnailMelody abc
+            fooBar = spy "playing thumbnail" idx
           _ <- H.query _thumbnailPlayer unit $ H.tell (TNP.PlayMelody melody)
           pure unit
 
     StopThumbnail -> do
       _ <- H.query _thumbnailPlayer unit $ H.tell TNP.StopMelody
+      pure unit
+
+    HandleTuneIsPlaying (TNP.IsPlaying isPlaying)-> do
+      let
+        foo = spy "Message from player - isPlaying" isPlaying
+      _ <- H.modify_ (\st -> st { isThumbnailPlaying = isPlaying } )
       pure unit
 
   handleQuery :: ∀ a. Query a -> H.HalogenM State Action ChildSlots o m (Maybe a)

@@ -11,7 +11,8 @@
     "purescript-halogen-css": "https://github.com/newlandsvalley/purescript-halogen-css.git#master",
     "purescript-css": "^4.0.0",
     "purescript-js-fileio":  "https://github.com/newlandsvalley/purescript-js-fileio.git#2.0.2",
-    "purescript-soundfonts": "^3.0.2"
+    "purescript-soundfonts": "^3.0.2",
+    "purescript-debug": "^4.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^4.0.0"

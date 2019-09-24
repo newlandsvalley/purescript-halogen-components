@@ -27,6 +27,9 @@ import Effect.Class (class MonadEffect)
 import Halogen as H
 import Halogen.HTML as HH
 
+
+import Debug.Trace (spy)
+
 type Slot = H.Slot Query Message
 
 data PlaybackState =
@@ -156,7 +159,7 @@ stop :: ∀ m.
   MonadState State m =>
   MonadAff m =>
   m State
-stop =
+stop = do
   H.modify (\st -> st  { phraseIndex = 0, playing = STOPPED, melody = [] })
 
 -- step to the next part of the melody if we're still running
@@ -172,6 +175,8 @@ step = do
     mPhrase = locateNextPhrase state
   case mPhrase of
     Just (midiPhrase) -> do
+      let
+        foo = spy "stepping phrase" state.phraseIndex
       -- play the phrase
       -- only NoteOn events produce sound
       phraseLength <- H.liftEffect (playNotes state.instruments midiPhrase)
