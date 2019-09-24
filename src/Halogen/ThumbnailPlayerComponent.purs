@@ -111,7 +111,7 @@ handleQuery = case _ of
       then do
         -- play
         _ <- H.modify (\st -> st { phraseIndex = 0, playing = PLAYING, melody = melody })
-        -- H.raise $ IsPlaying true
+        H.raise $ IsPlaying true
         handleQuery (StepMelody next)
         -- pure (Just next)
       else do
