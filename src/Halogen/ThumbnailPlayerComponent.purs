@@ -1,6 +1,6 @@
 module Halogen.ThumbnailPlayerComponent
   ( Query(..)
-  , Message
+  , Message(..)
   , Slot
   , component) where
 

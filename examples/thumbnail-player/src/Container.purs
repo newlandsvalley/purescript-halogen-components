@@ -24,7 +24,7 @@ import VexFlow.Types (Config)
 import Audio.SoundFont (Instrument)
 import Audio.SoundFont.Melody (Melody)
 import Audio.SoundFont.Melody.Maker (toMelody_)
-import Halogen.ThumbnailPlayerComponent (Query(..), Slot, component) as TNP
+import Halogen.ThumbnailPlayerComponent (Query(..), Message(..), Slot, component) as TNP
 
 type State =
   {
@@ -99,7 +99,7 @@ component =
   render :: State -> H.ComponentHTML Action ChildSlots m
   render state =
     HH.div_
-      [ HH.slot _thumbnailPlayer unit TNP.component { instruments : state.instruments } absurd
+      [ HH.slot _thumbnailPlayer unit TNP.component { instruments : state.instruments } (Just <<< HandleTuneIsPlaying)
       , renderTuneList state
       , renderAddThumbnailsButton state
       , instructions state
