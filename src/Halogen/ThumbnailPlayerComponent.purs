@@ -100,7 +100,7 @@ handleQuery = case _ of
   PlayMelody melody next -> do
     -- stop any previously playing melody
     _ <- stop
-    
+
     if (not (null melody))
       then do
         -- play
@@ -151,8 +151,15 @@ stop :: ∀ m.
   MonadState State m =>
   MonadAff m =>
   m State
-stop =
-  H.modify (\st -> st  { phraseIndex = 0, playing = STOPPED, melody = [] })
+stop = do
+  state <- H.get
+  if (state.playing == PLAYING)
+    then do
+      -- delay whilst we're waiting for this final phrase to stop
+      _ <-  H.liftAff $ delay (Milliseconds ((state.phraseLength) * 1000.0))
+      H.modify (\st -> st  { phraseIndex = 0, playing = STOPPED, melody = [] })
+    else
+      H.modify (\st -> st  { phraseIndex = 0, playing = STOPPED, melody = [] })
 
 -- step to the next part of the melody if we're still running
 step :: forall m a.
