@@ -15,9 +15,6 @@ import Audio.SoundFont (Instrument, playNotes)
 import Audio.SoundFont.Melody (Melody, MidiPhrase)
 import Control.Monad.State.Class (class MonadState)
 import Data.Array (null, index)
-import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Eq (genericEq)
-import Data.Generic.Rep.Show (genericShow)
 import Data.Maybe (Maybe(..))
 import Data.Time.Duration (Milliseconds(..))
 import Effect.Aff (delay)
@@ -27,16 +24,6 @@ import Halogen as H
 import Halogen.HTML as HH
 
 type Slot = H.Slot Query Void
-
-data PlaybackState =
-    PLAYING           -- the melody is playing
-  | STOPPED           -- the melody is not playing
-
-derive instance genericPlaybackState :: Generic PlaybackState _
-instance showEvent :: Show PlaybackState where
-  show = genericShow
-instance eqEvent :: Eq PlaybackState where
-  eq = genericEq
 
 type Input =
   { instruments :: Array Instrument }
@@ -51,11 +38,12 @@ data Query a =
     PlayMelody Melody a              -- play
   | StepMelody a                     -- step to the next phrase
   | StopMelody a                     -- stop and reset to zero
+  | IsPlaying (Boolean -> a)         -- is the player playing
 
 type State =
   { instruments :: Array Instrument  -- the instrument soundfonts available
   , melody :: Melody                 -- the melody to play
-  , playing :: PlaybackState         -- the state of the playback
+  , playing :: Boolean               -- is the player playing?
   , phraseIndex :: Int               -- the current phrase being played
   , phraseLength :: Number           -- the duration of the phrase currently playing
   }
@@ -81,7 +69,7 @@ component =
   initialState input =
     { instruments : input.instruments
     , melody : []
-    , playing : STOPPED
+    , playing : false
     , phraseIndex : 0
     , phraseLength : 0.0
     }
@@ -100,11 +88,11 @@ handleQuery = case _ of
   PlayMelody melody next -> do
     -- stop any previously playing melody
     _ <- stop
-    
+
     if (not (null melody))
       then do
         -- play
-        _ <- H.modify (\st -> st { phraseIndex = 0, playing = PLAYING, melody = melody })
+        _ <- H.modify (\st -> st { phraseIndex = 0, playing = true, melody = melody })
         _ <- handleQuery (StepMelody unit)
         pure (Just next)
       else do
@@ -115,7 +103,7 @@ handleQuery = case _ of
   StepMelody next -> do
     state <- H.get
 
-    if ((state.playing == PLAYING) && (not (null state.melody)))
+    if (state.playing && (not (null state.melody)))
       then do
         -- play
         nextInstruction <- step
@@ -126,6 +114,10 @@ handleQuery = case _ of
   StopMelody next -> do
     _ <- stop
     pure (Just next)
+
+  IsPlaying f -> do
+    isPlaying <- H.gets _.playing
+    pure (Just (f isPlaying))
 
 -- handling an action just delegates to the appropriate query
 handleAction ∷ ∀ o m.
@@ -152,7 +144,7 @@ stop :: ∀ m.
   MonadAff m =>
   m State
 stop =
-  H.modify (\st -> st  { phraseIndex = 0, playing = STOPPED, melody = [] })
+  H.modify (\st -> st  { phraseIndex = 0, playing = false, melody = [] })
 
 -- step to the next part of the melody if we're still running
 step :: forall m a.
@@ -186,7 +178,7 @@ step = do
 -- | locate the next MIDI phrase from the performance
 locateNextPhrase :: State -> Maybe MidiPhrase
 locateNextPhrase state =
-  if (not (state.playing == PLAYING)) || (null state.melody) then
+  if (not state.playing) || (null state.melody) then
     Nothing
   else
     index state.melody (state.phraseIndex)

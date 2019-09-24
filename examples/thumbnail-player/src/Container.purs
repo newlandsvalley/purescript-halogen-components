@@ -161,15 +161,17 @@ component =
       _ <- H.modify_ (\st -> st { rendered = true } )
       pure unit
 
+
     PlayThumbnail idx -> do
-      _ <- H.query _thumbnailPlayer unit $ H.tell TNP.StopMelody
-      state <- H.get
-      if (idx >= (length $ state.tuneList) )
+      -- play the tumbnail unless the thumbnail player is still playing
+      isPlaying <- H.query _thumbnailPlayer unit $ H.request TNP.IsPlaying
+      tuneList <- H.gets _.tuneList
+      if ((idx >= (length tuneList)) || ( isPlaying == Just true))
         then do
           pure unit
         else do
           let
-            abc = unsafePartial $ unsafeIndex state.tuneList idx
+            abc = unsafePartial $ unsafeIndex tuneList idx
             melody = getThumbnailMelody abc
           _ <- H.query _thumbnailPlayer unit $ H.tell (TNP.PlayMelody melody)
           pure unit
