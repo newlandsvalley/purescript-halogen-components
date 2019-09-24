@@ -121,6 +121,8 @@ handleQuery = case _ of
   -- it must respect interruption from the parent between steps
   StepMelody next -> do
     state <- H.get
+    let
+      foo = spy "StepMelody playing?" state.playing
 
     if ((state.playing == PLAYING) && (not (null state.melody)))
       then do
@@ -173,6 +175,7 @@ step = do
   state <- H.get
   let
     mPhrase = locateNextPhrase state
+    bar = spy "locate next phrase" mPhrase
   case mPhrase of
     Just (midiPhrase) -> do
       let
