@@ -24,7 +24,7 @@ import VexFlow.Types (Config)
 import Audio.SoundFont (Instrument)
 import Audio.SoundFont.Melody (Melody)
 import Audio.SoundFont.Melody.Maker (toMelody_)
-import Halogen.ThumbnailPlayerComponent (Query(..), Message(..), Slot, component) as TNP
+import Halogen.ThumbnailPlayerComponent (Query(..), Slot, component) as TNP
 
 type State =
   {
@@ -32,7 +32,6 @@ type State =
   , instruments :: Array Instrument
   , vexRenderers :: Array Renderer
   , rendered :: Boolean
-  , isThumbnailPlaying :: Boolean
   }
 
 data Query a =
@@ -52,7 +51,6 @@ data Action =
     AddThumbnails       -- add all thumbnails to this page
   | PlayThumbnail Int
   | StopThumbnail
-  | HandleTuneIsPlaying TNP.Message
 
 scale :: Number
 scale = 0.6
@@ -96,13 +94,12 @@ component =
      , instruments : instruments
      , vexRenderers : []
      , rendered : false
-     , isThumbnailPlaying : false
      }
 
   render :: State -> H.ComponentHTML Action ChildSlots m
   render state =
     HH.div_
-      [ HH.slot _thumbnailPlayer unit TNP.component { instruments : state.instruments } (Just <<< HandleTuneIsPlaying)
+      [ HH.slot _thumbnailPlayer unit TNP.component { instruments : state.instruments } absurd
       , renderTuneList state
       , renderAddThumbnailsButton state
       , instructions state
@@ -165,30 +162,20 @@ component =
       pure unit
 
     PlayThumbnail idx -> do
-      -- _ <- H.query _thumbnailPlayer unit $ H.tell TNP.StopMelody
+      _ <- H.query _thumbnailPlayer unit $ H.tell TNP.StopMelody
       state <- H.get
-      let
-        foo = spy "PlayThumbnail - instruments number" (length state.instruments)
       if (idx >= (length $ state.tuneList) )
-      -- if ((idx >= (length $ state.tuneList) )  || state.isThumbnailPlaying)
         then do
           pure unit
         else do
           let
             abc = unsafePartial $ unsafeIndex state.tuneList idx
             melody = getThumbnailMelody abc
-            fooBar = spy "playing thumbnail" idx
           _ <- H.query _thumbnailPlayer unit $ H.tell (TNP.PlayMelody melody)
           pure unit
 
     StopThumbnail -> do
       _ <- H.query _thumbnailPlayer unit $ H.tell TNP.StopMelody
-      pure unit
-
-    HandleTuneIsPlaying (TNP.IsPlaying isPlaying)-> do
-      let
-        foo = spy "Message from player - isPlaying" isPlaying
-      _ <- H.modify_ (\st -> st { isThumbnailPlaying = isPlaying } )
       pure unit
 
   handleQuery :: ∀ a. Query a -> H.HalogenM State Action ChildSlots o m (Maybe a)

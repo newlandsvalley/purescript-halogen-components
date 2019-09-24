@@ -1,6 +1,5 @@
 module Halogen.ThumbnailPlayerComponent
   ( Query(..)
-  , Message(..)
   , Slot
   , component) where
 
@@ -27,10 +26,7 @@ import Effect.Class (class MonadEffect)
 import Halogen as H
 import Halogen.HTML as HH
 
-
-import Debug.Trace (spy)
-
-type Slot = H.Slot Query Message
+type Slot = H.Slot Query Void
 
 data PlaybackState =
     PLAYING           -- the melody is playing
@@ -44,8 +40,6 @@ instance eqEvent :: Eq PlaybackState where
 
 type Input =
   { instruments :: Array Instrument }
-
-data Message = IsPlaying Boolean
 
 -- actions are those that usually derive from HTML events but we have no HTML!
 -- only used here to enamle receive and finalize.
@@ -66,9 +60,9 @@ type State =
   , phraseLength :: Number           -- the duration of the phrase currently playing
   }
 
-component :: ∀ m.
+component :: ∀ o m.
   MonadAff m =>
-  H.Component HH.HTML Query Input Message m
+  H.Component HH.HTML Query Input o m
 component =
   H.mkComponent
     { initialState
@@ -97,23 +91,22 @@ component =
   render state =
     HH.text ""
 
-handleQuery :: forall a m.
+handleQuery :: forall a o m.
   MonadAff m =>
   Query a ->
-  H.HalogenM State Action () Message m (Maybe a)
+  H.HalogenM State Action () o m (Maybe a)
 handleQuery = case _ of
 
   PlayMelody melody next -> do
     -- stop any previously playing melody
     _ <- stop
-
+    
     if (not (null melody))
       then do
         -- play
         _ <- H.modify (\st -> st { phraseIndex = 0, playing = PLAYING, melody = melody })
-        H.raise $ IsPlaying true
-        handleQuery (StepMelody next)
-        -- pure (Just next)
+        _ <- handleQuery (StepMelody unit)
+        pure (Just next)
       else do
         pure (Just next)
 
@@ -121,8 +114,6 @@ handleQuery = case _ of
   -- it must respect interruption from the parent between steps
   StepMelody next -> do
     state <- H.get
-    let
-      foo = spy "StepMelody playing?" state.playing
 
     if ((state.playing == PLAYING) && (not (null state.melody)))
       then do
@@ -134,14 +125,13 @@ handleQuery = case _ of
 
   StopMelody next -> do
     _ <- stop
-    H.raise $ IsPlaying false
     pure (Just next)
 
 -- handling an action just delegates to the appropriate query
-handleAction ∷ ∀ m.
+handleAction ∷ ∀ o m.
   MonadAff m =>
   Action →
-  H.HalogenM State Action () Message m Unit
+  H.HalogenM State Action () o m Unit
 handleAction = case _ of
 
   -- just here so we can invoke it from the finalizer
@@ -161,7 +151,7 @@ stop :: ∀ m.
   MonadState State m =>
   MonadAff m =>
   m State
-stop = do
+stop =
   H.modify (\st -> st  { phraseIndex = 0, playing = STOPPED, melody = [] })
 
 -- step to the next part of the melody if we're still running
@@ -175,11 +165,8 @@ step = do
   state <- H.get
   let
     mPhrase = locateNextPhrase state
-    bar = spy "locate next phrase" mPhrase
   case mPhrase of
     Just (midiPhrase) -> do
-      let
-        foo = spy "stepping phrase" state.phraseIndex
       -- play the phrase
       -- only NoteOn events produce sound
       phraseLength <- H.liftEffect (playNotes state.instruments midiPhrase)
