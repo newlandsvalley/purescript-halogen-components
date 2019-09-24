@@ -27,7 +27,7 @@ import Effect.Class (class MonadEffect)
 import Halogen as H
 import Halogen.HTML as HH
 
-type Slot = H.Slot Query Void
+type Slot = H.Slot Query Message
 
 data PlaybackState =
     PLAYING           -- the melody is playing

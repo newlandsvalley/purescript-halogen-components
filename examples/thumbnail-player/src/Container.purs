@@ -51,6 +51,7 @@ data Action =
     AddThumbnails       -- add all thumbnails to this page
   | PlayThumbnail Int
   | StopThumbnail
+  | HandleTuneIsPlaying TNP.Message
 
 scale :: Number
 scale = 0.6
