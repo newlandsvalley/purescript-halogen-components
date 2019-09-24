@@ -155,8 +155,8 @@ stop = do
   state <- H.get
   if (state.playing == PLAYING)
     then do
-      -- delay a little whilst we're waiting for the current phrase to stop
-      _ <-  H.liftAff $ delay (Milliseconds 200.0)
+      -- delay whilst we're waiting for this final phrase to stop
+      _ <-  H.liftAff $ delay (Milliseconds ((state.phraseLength) * 1000.0))
       H.modify (\st -> st  { phraseIndex = 0, playing = STOPPED, melody = [] })
     else
       H.modify (\st -> st  { phraseIndex = 0, playing = STOPPED, melody = [] })
