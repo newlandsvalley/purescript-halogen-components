@@ -20,9 +20,9 @@ to build
 to build the thumbnail player example
 -------------------------------------
 
-     cd to examples/thumbnail-player 
+     cd to examples/thumbnail-player
 
-     bower install 
+     bower install
 
      npm run build
 
@@ -37,7 +37,7 @@ to build the other examples
 
      npm run multiple-select
 
-     npm run player
+     (npm run player - this fails at the moment - I'll fix when Halogen5 is released)
 
 To run an example
 -----------------
