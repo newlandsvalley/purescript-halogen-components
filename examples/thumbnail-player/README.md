@@ -7,3 +7,11 @@ The intention is for it to be used to play thumbnail images of the start of tune
 
 This example uses ABC tunes curtailed by the __thumbnail__ function and then converted to a melody in the normal way.
 
+to build
+--------
+
+     bower install
+
+     npm run build
+
+and then navigate using a browser to dist/index.html

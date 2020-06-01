@@ -1,33 +1,18 @@
 module Examples.Player.Main where
 
 import Audio.SoundFont (Instrument, loadRemoteSoundFonts)
+import Audio.SoundFont.Melody (Melody, PMelody(..))
+import Data.Abc.Parser (parse)
+import Data.Abc.Melody (toMelodyDefault)
 import Effect (Effect)
 import Effect.Aff (Aff)
-import Effect.Class (liftEffect)
-import Effect.Console (log)
-import Affjax (request, defaultRequest)
-import Affjax.ResponseFormat as ResponseFormat
-import Data.HTTP.Method (Method(..))
-import Affjax.RequestHeader (RequestHeader(..))
-import Data.MediaType (MediaType(..))
-import Data.ArrayBuffer.Types (ArrayBuffer, Uint8Array)
-import Data.ArrayBuffer.ArrayBuffer (fromArray)
 import Data.Midi.Instrument (InstrumentName(..))
-import Data.Midi.Parser (normalise, parse)
-import Data.Either (Either(..), fromRight)
-import Data.ArrayBuffer.DataView (whole)
-import Data.ArrayBuffer.Typed (asUint8Array, toIntArray)
-import Data.Int.Bits (and)
-import Data.Char (fromCharCode)
-import Data.String.CodeUnits (fromCharArray)
-import Data.Maybe (fromMaybe)
+import Data.Either (Either(..))
 import Halogen as H
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
 import Halogen.PlayerComponent (component)
-import Audio.SoundFont.Melody.Class (MidiRecording(..))
-import Prelude (Unit, unit, bind, map, pure, (<>), ($), (<<<))
-import Partial.Unsafe (unsafePartial)
+import Prelude (Unit, unit, bind, pure, (<>))
 
 loadInstruments :: Aff (Array Instrument)
 loadInstruments =
@@ -53,60 +38,40 @@ melodyf =
   (\_ -> [ (phraseSample 0 60), (phraseSample 0 64), (phraseSample 0 67)])
 -}
 
-loadMidi ::
-  String
-  -> Aff ArrayBuffer
-loadMidi name = do
-  let
-    url =
-      "midi/" <> name
-  res <- request $ defaultRequest
-           { url = url
-           , method = Left GET
-           , responseFormat = ResponseFormat.arrayBuffer
-           , headers = [ Accept (MediaType "audio/midi")]
-           }
-  case res.body of
-    Left err -> do
-      _ <- liftEffect $ log "MIDI failed to load"
-      pure $ fromArray []
-    Right body ->
-      --log $ "GET /api response: " <> J.stringify json
-      pure body
-
-toUint8Array :: ArrayBuffer ->  Uint8Array
-toUint8Array ab =
-  asUint8Array $ whole ab
-
--- | convert the unsigned integer array to the 'binary string' which is expected
--- | by the MIDI parser.  This is the same format that would be returned either
--- | by readAsBinaryString or by using the override MIME type hack in XmlHttpRequest.
--- | denormalise is the 'mirror' function to the MIDI parser's normalise function.
--- | However masking off all but the lowest byte is not strictly necessary because
--- | normalise will also do that.
-denormalise :: Uint8Array -> String
-denormalise =
-  let
-    f = unsafeFromCharCode <<< ((and) 0xFF)
-  in
-    fromCharArray <<< map f <<< toIntArray
-
-unsafeFromCharCode :: Int -> Char
-unsafeFromCharCode i =
-  fromMaybe 'a' $ fromCharCode i
-
 
 main :: Effect Unit
 main = HA.runHalogenAff do
   instruments <- H.liftAff loadInstruments
-  midiBytes <- H.liftAff $ loadMidi "lillasystern.midi"
   let
-    erecording = (parse <<< normalise <<< denormalise <<< toUint8Array) midiBytes
-    recording = unsafePartial $ fromRight erecording
+    melody = getMelody augustsson
   body <- HA.awaitBody
   -- io <- runUI (component (Just (MidiRecording recording)) instruments) (MidiRecording recording) body
-  io <- runUI (component (MidiRecording recording) instruments) unit body
+  io <- runUI (component (PMelody melody) instruments) unit body
   {- if we want to change the Playable recording, we can use this:
   _ <- io.query $ H.action $ HandleNewPlayable (MidiRecording recording)
   -}
   pure unit
+
+getMelody :: String -> Melody
+getMelody abc =
+  case (parse abc) of
+    Right abcTune ->
+      toMelodyDefault abcTune
+    _ ->
+      []
+
+augustsson :: String
+augustsson =
+  "X:1\r\n"
+  <> "T:Engelska efter Albert Augustsson\r\n"
+  <> "N:From the playing of Albert Augustsson, Bohuslän county.\r\n"
+  <> "M:4/4\r\n"
+  <> "R:Engelska\r\n"
+  <> "S:Orust\r\n"
+  <> "Z:John Watson 24/01/2015\r\n"
+  <> "L:1/8\r\n"
+  <> "K:A\r\n"
+  <> "A>c|: e2f2 efed | c2a2 e3d | cedc BdcB | Aced cBAc |\r\n"
+  <> "e2f2 efed | c2a2 e3d | cedc BdcB | A4 A>AA>B :|\r\n"
+  <> "|: e2e2 e2de | f2ed B3c | d3c d2cd | e3d cdBc |\r\n"
+  <> "A2a2 a2gf | e2f2 e3d | cedc BdcB |1 A4 A>AA>B :|2 [A4E4] [A4E4] |\r\n"

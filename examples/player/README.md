@@ -1,8 +1,17 @@
-Soundfont player component example
-==================================
+player component example
+========================
 
-This is a Halogen component that displays a player widget that will play any melody that conforms to the __Playable__ typeclass (representing melodies composed of a succession of phrases of __MidiNote__). The typeclass is defined in [purescript-soundfonts](https://github.com/newlandsvalley/purescript-soundfonts) and instances currently exist for MIDI, ABC and PSoM.  The example player chooses a MIDI instance.
+This is a Halogen component that is a player for a Melody (i.e. a melody composed of a succession of phrases of MidiNote). purescript-soundfonts provides the basic means of playing an individual phrase. However, if we were to re-render after every individual note, the playback would not be paced properly. Instead we group notes into phrases which are the units of interruptibility. This means the buttons are slightly unresponsive because they must wait for the phrase to end before they take effect.
 
-The player materialises the melody only when the play button is first pressed. The idea is to
-allow the player to be rendered even though the user may not wish immediately to play the melody.  Playable melodies group the notes into a succession of phrases which are the units of interruptibility. This design represents a compromise between allowing the playback to be paced properly and allowing it to be interrupted without waiting too long for this to happen.
+The player materialises the melody only when the play button is first pressed. The idea is to allow the player to be rendered even though the user may not wish immediately to play the melody.
 
+The player defines a typeclass Playable which allows any music source to be played if an instance can be defined. The player itself implements an ABC instance.
+
+to build
+--------
+
+     bower install
+
+     npm run build
+
+and then navigate using a browser to dist/index.html

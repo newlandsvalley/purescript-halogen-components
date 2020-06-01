@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "pulp build --main Examples.ThumbnailPlayer.Main --to dist/app.js"
+    "build": "pulp build --no-check-main --main Examples.ThumbnailPlayer.Main --to dist/app.js"
   },
   "devDependencies": {
     "pulp": "^12.3.0",
