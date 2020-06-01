@@ -7,7 +7,7 @@
     "output"
   ],
   "dependencies": {
-    "purescript-halogen-components": "https://github.com/newlandsvalley/purescript-halogen-components.git#halogen5",
+    "purescript-halogen-components": "https://github.com/newlandsvalley/purescript-halogen-components.git#master",
     "purescript-abc-parser": "https://github.com/newlandsvalley/purescript-abc-parser.git#master",
     "purescript-abc-melody": "https://github.com/newlandsvalley/purescript-abc-melody.git#master",
     "purescript-abc-scores": "https://github.com/newlandsvalley/purescript-abc-scores.git#master"
