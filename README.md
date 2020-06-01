@@ -4,7 +4,7 @@ halogen-components
 This module consists of a heterogeneous group of UI components, chosen because they are of use in building various music player or editor applications.  Currently we have:
 
   * Soundfont melody player (with UI)
-  * Thumbnail melody player (no UI)
+  * Thumbnail melody player (no UI)  
   * File input select
   * Multiple select dropdown
   * Trivial button
@@ -17,10 +17,10 @@ to build
      pulp build
 
 
-to build the thumbnail player example
--------------------------------------
+to build the player or thumbnail player examples:
+-------------------------------------------------
 
-     cd to examples/thumbnail-player
+     cd to examples/player or  examples/thumbnail-player as appropriate
 
      bower install
 
@@ -36,8 +36,6 @@ to build the other examples
      npm run fileio
 
      npm run multiple-select
-
-     (npm run player - this fails at the moment - I'll fix when Halogen5 is released)
 
 To run an example
 -----------------
