@@ -245,6 +245,7 @@ handleQuery = case _ of
 
   -- StopMelody resets the melody index back to the start
   StopMelody next -> do
+    H.raise $ IsPlaying false
     newState <- stop
     H.put newState
     pure (Just next)
