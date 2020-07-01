@@ -1,5 +1,7 @@
 module Halogen.PlayerComponent.Style (
-    capsuleStyle
+    Capsule
+  , capsule
+  , capsuleStyle
   , playerBlockStyle
   , playerStyle
   , buttonStyle
@@ -16,9 +18,19 @@ import CSS.Display (display, inlineBlock)
 import CSS.Geometry (width, height, margin)
 import CSS.Overflow (hidden, overflow)
 import CSS.Size (px)
--- import Halogen (IProp)
 import Halogen.HTML.Properties (IProp)
 import Halogen.HTML.CSS (style)
+
+type Capsule =
+  { ref :: String    -- the capsule reference name
+  , width :: Number  -- its width
+  }
+
+capsule :: Capsule
+capsule =
+  { ref : "capsule"
+  , width : 220.0
+  }
 
 centreStyle :: ∀ i r. IProp (style :: String | r) i
 centreStyle =
@@ -47,7 +59,7 @@ capsuleStyle =
     boxShadow (px 0.0) (px 0.0) (px 0.0) (rgb 5 5 5)
     overflow hidden
     display inlineBlock
-    width (px 220.0)
+    width (px capsule.width)
     height (px 20.0)
 
 -- | the basic style of the outline of the player which surrounds

@@ -21,8 +21,8 @@ import Data.Array (null, index, length)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Eq (genericEq)
 import Data.Generic.Rep.Show (genericShow)
-import Data.Int (toNumber)
-import Data.Maybe (Maybe(..))
+import Data.Int (floor, toNumber)
+import Data.Maybe (Maybe(..), maybe)
 import Data.Time.Duration (Milliseconds(..))
 import Effect (Effect)
 import Effect.Aff (delay)
@@ -33,7 +33,9 @@ import Halogen.HTML as HH
 import Halogen.HTML.Core (PropName(..))
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-import Halogen.PlayerComponent.Style (capsuleStyle, playerBlockStyle, playerStyle, buttonStyle)
+import Halogen.PlayerComponent.Style (capsule, capsuleStyle, playerBlockStyle, playerStyle, buttonStyle)
+import Web.UIEvent.MouseEvent (clientX)
+import Web.HTML.HTMLElement (HTMLElement, getBoundingClientRect)
 
 type Slot p = H.Slot (Query p) Message
 
@@ -56,6 +58,8 @@ data Message = IsPlaying Boolean
 data Action =
     PlayMelodyAction PlaybackState           -- invoke play | pause
   | StopMelodyAction                         -- invoke stop
+  | CapsuleMouseButton Boolean               -- Mouse down over the player capsule
+  | CapsuleDragPosition Number               -- the position where the capsule is dragged to
 
 data Query p a =
     SetInstruments (Array Instrument) a
@@ -72,6 +76,8 @@ type State p =
   , phraseIndex :: Int               -- the current phrase being played
   , phraseLength :: Number           -- the duration of the phrase currently playing
   , playable :: p                    -- the playable piece of music to convert to a melody
+  , capsuleMouseDown :: Boolean      -- the state of any mouse button over the player capsule
+  , capsuleDragPosition :: Number    -- temp
   }
 
 -- | In this branch, there is no receiver function or receiver input
@@ -105,6 +111,8 @@ component playable instruments =
     , phraseIndex : 0
     , phraseLength : 0.0
     , playable : playable
+    , capsuleMouseDown : false
+    , capsuleDragPosition : 0.0
     }
 
 
@@ -163,14 +171,22 @@ component playable instruments =
               ]
           , HH.progress
                 [ HP.max capsuleMax
+                , HP.ref $ H.RefLabel capsule.ref
                 , progressValue sliderPos
+                , HE.onMouseDown \_ -> Just (CapsuleMouseButton true)
+                , HE.onMouseUp \_ -> Just (CapsuleMouseButton false)
+                , HE.onMouseLeave \_ -> Just (CapsuleMouseButton false)
+                , HE.onMouseMove \e -> Just (CapsuleDragPosition ((toNumber <<< clientX) e))
                 , capsuleStyle
                 ] []
           ]
           {- debug
           , HH.div_
-            [ HH.text ("melody length: " <> show (length state.melody))
-            , HH.text ("no of instruments: " <> show (length state.instruments))]
+            [ HH.text ("Capsule Mouse down? " <> show (state.capsuleMouseDown))
+            , HH.text ("Capsule drag position " <> show (state.capsuleDragPosition))
+            , HH.text ("melody length: " <> show (length state.melody))
+            , HH.text ("no of instruments: " <> show (length state.instruments))
+            ]
           -}
         ]
 
@@ -272,6 +288,20 @@ handleAction = case _ of
   PlayMelodyAction playbackState -> do
     _ <- handleQuery (PlayMelody playbackState unit)
     pure unit
+  CapsuleMouseButton isDown -> do
+    _ <- H.modify (\state -> state { capsuleMouseDown = isDown})
+    pure unit
+  CapsuleDragPosition viewportPos -> do
+    state <- H.get
+    mCapsuleElement <- H.getHTMLElementRef (H.RefLabel capsule.ref)
+    -- get the left hand side of the capsule in the viewport
+    capsuleXPos <- maybe (pure 0.0) (H.liftEffect <<< getCapsuleX) mCapsuleElement
+    when state.capsuleMouseDown do
+      let
+        capsuleDragPosition = viewportPos - capsuleXPos
+        newIndex = floor (capsuleDragPosition / capsule.width * toNumber (length state.melody))
+      H.modify_ (\st -> st { capsuleDragPosition = capsuleDragPosition, phraseIndex = newIndex})
+    pure unit
 
 -- establish the melody by conversion from the playable
 establishMelody :: ∀ m p.
@@ -367,3 +397,9 @@ playEvent instruments midiPhrase =
 -- halogen bug workaround
 progressValue :: forall r i. Number -> HP.IProp (value :: Number | r) i
 progressValue = HP.prop (PropName "value")
+
+-- get the X position of the player capsule
+getCapsuleX :: HTMLElement -> Effect Number
+getCapsuleX capsuleElement = do
+  rect <- getBoundingClientRect capsuleElement
+  pure $ rect.left
