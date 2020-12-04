@@ -3,6 +3,7 @@
 /bower_components/
 /node_modules/
 /output/
+/.spago/
 /dist/app.js
 /examples/button/dist/app.js
 /examples/fileio/dist/app.js

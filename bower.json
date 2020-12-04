@@ -7,11 +7,11 @@
     "output"
   ],
   "dependencies": {
-    "purescript-halogen": "^5.0.0",
+    "purescript-halogen": "^5.1.0",
     "purescript-halogen-css": "https://github.com/newlandsvalley/purescript-halogen-css.git#master",
     "purescript-css": "^4.0.0",
-    "purescript-js-fileio":  "https://github.com/newlandsvalley/purescript-js-fileio.git#2.0.2",
-    "purescript-soundfonts": "https://github.com/newlandsvalley/purescript-soundfonts.git#master"
+    "purescript-js-fileio":  "https://github.com/newlandsvalley/purescript-js-fileio.git#2.0.3",
+    "purescript-soundfonts": "^3.1.1"
   },
   "devDependencies": {
     "purescript-psci-support": "^4.0.0"

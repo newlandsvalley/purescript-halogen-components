@@ -7,13 +7,17 @@ This module consists of a heterogeneous group of UI components, chosen because t
   * Thumbnail melody player (no UI)  
   * File input select
   * Multiple select dropdown
-  * Trivial button
+  * Trivial button (deprecated)
 
 to build
 --------
 
-     bower install
+     spago install
+     spago build
 
+or
+
+     bower install
      pulp build
 
 

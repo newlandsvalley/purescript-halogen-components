@@ -1,10 +1,14 @@
 {
   "private": true,
   "scripts": {
-    "build": "pulp build",
-    "button": "pulp build --main Examples.Button.Main --include examples/button/src --to examples/button/dist/app.js",
-    "fileio": "pulp build --main Examples.Fileio.Main --include examples/fileio/src --to examples/fileio/dist/app.js",
-    "multiple-select": "pulp build --main Examples.MultipleSelect.Main --include examples/multiple-select/src --to examples/multiple-select/dist/app.js"
+    "build": "spago build",
+    "pulp-build": "pulp build",
+    "button": "spago bundle-app --main Examples.Button.Main --to examples/button/dist/app.js",
+    "fileio": "spago bundle-app --main Examples.Fileio.Main --to examples/fileio/dist/app.js",
+    "multiple-select": "spago bundle-app --main Examples.MultipleSelect.Main --to examples/multiple-select/dist/app.js",
+    "pulp-button": "pulp build --main Examples.Button.Main --include examples/button/src --to examples/button/dist/app.js",
+    "pulp-fileio": "pulp build --main Examples.Fileio.Main --include examples/fileio/src --to examples/fileio/dist/app.js",
+    "pulp-multiple-select": "pulp build --main Examples.MultipleSelect.Main --include examples/multiple-select/src --to examples/multiple-select/dist/app.js"
   },
   "devDependencies": {
     "pulp": "^15.0.0",
