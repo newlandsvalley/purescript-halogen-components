@@ -106,34 +106,11 @@ in  upstream
 -}
 
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20201125/packages.dhall sha256:ef58d9afae22d1bc9d83db8c72d0a4eca30ce052ab49bbc44ced2da0bc5cad1a
+      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20201204/packages.dhall sha256:89f184cea1ca40630ea34fb68972589b8eedf4809275686aef85f86abaa2145f
 
 in  upstream
-    with js-fileio =
-    { dependencies =
-       [ "aff"
-       , "effect"
-       , "prelude"
-       ]
-    , repo =
-       "https://github.com/newlandsvalley/purescript-js-fileio.git"
-    , version =
-        "2.0.3"
-    }
-    with soundfonts =
-    { dependencies =
-       [ "affjax"
-       , "argonaut-core"
-       , "b64"
-       , "console"
-       , "effect"
-       , "http-methods"
-       , "midi"
-       , "parallel"
-       , "prelude"
-       ]
-    , repo =
-       "https://github.com/newlandsvalley/purescript-soundfonts.git"
-    , version =
-        "v3.1.1"
+  with js-fileio =
+    { dependencies = [ "aff", "effect", "prelude" ]
+    , repo = "https://github.com/newlandsvalley/purescript-js-fileio.git"
+    , version = "2.0.3"
     }
