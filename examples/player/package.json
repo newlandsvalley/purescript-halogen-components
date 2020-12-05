@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "build": "pulp build --main Examples.Player.Main --to dist/app.js"
+    "build": "spago bundle-app --main Examples.Player.Main --to dist/app.js",
+    "pulp-build": "pulp build --main Examples.Player.Main --to dist/app.js"
   },
   "devDependencies": {
     "pulp": "^15.0.0",

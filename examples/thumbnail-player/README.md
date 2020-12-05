@@ -10,8 +10,6 @@ This example uses ABC tunes curtailed by the __thumbnail__ function and then con
 to build
 --------
 
-     bower install
-
      npm run build
 
 and then navigate using a browser to dist/index.html

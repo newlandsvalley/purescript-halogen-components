@@ -26,8 +26,6 @@ to build the player or thumbnail player examples:
 
      cd to examples/player or  examples/thumbnail-player as appropriate
 
-     bower install
-
      npm run build
 
 to build the other examples

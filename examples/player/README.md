@@ -10,8 +10,6 @@ The player defines a typeclass Playable which allows any music source to be play
 to build
 --------
 
-     bower install
-
      npm run build
 
 and then navigate using a browser to dist/index.html
