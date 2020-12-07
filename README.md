@@ -12,7 +12,6 @@ This module consists of a heterogeneous group of UI components, chosen because t
 to build
 --------
 
-     spago install
      spago build
 
 or
@@ -21,17 +20,12 @@ or
      pulp build
 
 
-to build the player or thumbnail player examples:
--------------------------------------------------
+to build the examples:
+----------------------
 
-     cd to examples/player or  examples/thumbnail-player as appropriate
+     npm run player 
 
-     npm run build
-
-to build the other examples
----------------------------
-
-(after bower install):
+     npm run thumbnail-player
 
      npm run button
 

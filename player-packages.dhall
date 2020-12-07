@@ -109,63 +109,48 @@ let upstream =
       https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20201204/packages.dhall sha256:89f184cea1ca40630ea34fb68972589b8eedf4809275686aef85f86abaa2145f
 
 in  upstream
-    with abc-scores =
-       { dependencies =
-           [ "abc-parser"
-           , "console"
-           , "effect"
-           , "prelude"
-           ]
-       , repo =
-           "https://github.com/newlandsvalley/purescript-abc-scores.git"
-       , version =
-           "v0.4.1"
-       }
-    with abc-parser =
-      { dependencies =
-          [ "bifunctors"
-          , "effect"
-          , "either"
-          , "foldable-traversable"
-          , "generics-rep"
-          , "maybe"
-          , "midi"
-          , "ordered-collections"
-          , "rationals"
-          , "strings"
-          , "stringutils"
-          , "string-parsers"
-          , "transformers"
-          , "tuples"
-          ]
-       , repo =
-           "https://github.com/newlandsvalley/purescript-abc-parser.git"
-       , version =
-           "v1.8.0"
-       }
-     with halogen-components =
-       { dependencies =
-           [ "console"
-           , "css"
-           , "effect"
-           , "js-fileio"
-           , "halogen"
-           , "halogen-css"
-           , "soundfonts"
-           ]
-       , repo =
-           "https://github.com/newlandsvalley/purescript-halogen-components.git"
-       , version =
-           "master"
-       }
-     with js-fileio =
-       { dependencies =
-           [ "aff"
-           , "effect"
-           , "prelude"
-           ]
-       , repo =
-           "https://github.com/newlandsvalley/purescript-js-fileio.git"
-       , version =
-           "2.0.3"
-       }
+        with abc-melody =
+           { dependencies =
+               [ "abc-parser"
+               , "effect"
+               , "prelude"
+               , "soundfonts"
+               ]
+           , repo =
+               "https://github.com/newlandsvalley/purescript-abc-melody.git"
+           , version =
+               "master"
+           }
+        with abc-parser =
+          { dependencies =
+              [ "bifunctors"
+              , "effect"
+              , "either"
+              , "foldable-traversable"
+              , "generics-rep"
+              , "maybe"
+              , "midi"
+              , "ordered-collections"
+              , "rationals"
+              , "strings"
+              , "stringutils"
+              , "string-parsers"
+              , "transformers"
+              , "tuples"
+              ]
+         , repo =
+             "https://github.com/newlandsvalley/purescript-abc-parser.git"
+         , version =
+             "v1.8.0"
+         }
+         with js-fileio =
+           { dependencies =
+               [ "aff"
+               , "effect"
+               , "prelude"
+               ]
+           , repo =
+               "https://github.com/newlandsvalley/purescript-js-fileio.git"
+           , version =
+               "2.0.3"
+           }

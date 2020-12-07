@@ -10,6 +10,7 @@ The player defines a typeclass Playable which allows any music source to be play
 to build
 --------
 
-     npm run build
+     cd to the purescript-halogen-components directory
+     npm run player
 
-and then navigate using a browser to dist/index.html
+and then navigate using a browser to examples/player/dist/index.html

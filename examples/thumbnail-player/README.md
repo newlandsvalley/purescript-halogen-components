@@ -10,6 +10,7 @@ This example uses ABC tunes curtailed by the __thumbnail__ function and then con
 to build
 --------
 
-     npm run build
+     cd to the purescript-halogen-components directory
+     npm run thumbnail-player
 
-and then navigate using a browser to dist/index.html
+and then navigate using a browser to examples/thumbnail-player/dist/index.html

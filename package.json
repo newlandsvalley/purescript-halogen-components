@@ -6,6 +6,8 @@
     "button": "spago bundle-app --main Examples.Button.Main --to examples/button/dist/app.js",
     "fileio": "spago bundle-app --main Examples.Fileio.Main --to examples/fileio/dist/app.js",
     "multiple-select": "spago bundle-app --main Examples.MultipleSelect.Main --to examples/multiple-select/dist/app.js",
+    "player": "spago -x ./player.dhall bundle-app --main Examples.Player.Main --to examples/player/dist/app.js",
+    "thumbnail-player": "spago -x ./thumbnail-player.dhall bundle-app --main Examples.ThumbnailPlayer.Main --to examples/thumbnail-player/dist/app.js",
     "pulp-button": "pulp build --main Examples.Button.Main --include examples/button/src --to examples/button/dist/app.js",
     "pulp-fileio": "pulp build --main Examples.Fileio.Main --include examples/fileio/src --to examples/fileio/dist/app.js",
     "pulp-multiple-select": "pulp build --main Examples.MultipleSelect.Main --include examples/multiple-select/src --to examples/multiple-select/dist/app.js"
