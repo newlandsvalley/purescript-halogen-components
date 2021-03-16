@@ -105,11 +105,68 @@ in  upstream
 -------------------------------
 -}
 
+
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.13.8-20201204/packages.dhall sha256:89f184cea1ca40630ea34fb68972589b8eedf4809275686aef85f86abaa2145f
+      https://github.com/purescript/package-sets/releases/download/psc-0.14.0-20210315/packages.dhall sha256:b94bb40844a78703075733d646da563a1dd42a884541841f8d708c08084bbf7e
 
 in  upstream
-    with abc-scores =
+  with halogen-css =
+      { dependencies =
+          [ "css"
+          , "halogen"
+          ]
+      , repo =
+          "https://github.com/newlandsvalley/purescript-halogen-css.git"
+      , version =
+          "master"
+      }
+  with soundfonts =
+      { dependencies =
+        [ "affjax"
+        , "argonaut-core"
+        , "b64"
+        , "console"
+        , "effect"
+        , "http-methods"
+        , "midi"
+        , "parallel"
+        , "prelude"
+        ]
+      , repo =
+          "https://github.com/newlandsvalley/purescript-soundfonts.git"
+      , version =
+          "ps014"
+      }
+  with b64 =
+      { dependencies =
+        [ "arraybuffer-types"
+        , "either"
+        , "encoding"
+        , "enums"
+        , "exceptions"
+        , "functions"
+        , "partial"
+        , "prelude"
+        , "strings"
+        ]
+      , repo =
+          "https://github.com/menelaos/purescript-b64.git"
+      , version =
+          "v0.0.7"
+      }
+  with abc-melody =
+       { dependencies =
+          [ "abc-parser"
+          , "effect"
+          , "prelude"
+          , "soundfonts"
+          ]
+       , repo =
+         "https://github.com/newlandsvalley/purescript-abc-melody.git"
+       , version =
+         "master"
+       }
+  with abc-scores =
        { dependencies =
            [ "abc-parser"
            , "console"
@@ -119,7 +176,7 @@ in  upstream
        , repo =
            "https://github.com/newlandsvalley/purescript-abc-scores.git"
        , version =
-           "v0.4.1"
+           "d3e99b8765ed610f38ebe900262cc52823fb3093"
        }
     with abc-parser =
       { dependencies =
@@ -141,16 +198,5 @@ in  upstream
        , repo =
            "https://github.com/newlandsvalley/purescript-abc-parser.git"
        , version =
-           "v1.8.0"
-       }
-     with js-fileio =
-       { dependencies =
-           [ "aff"
-           , "effect"
-           , "prelude"
-           ]
-       , repo =
-           "https://github.com/newlandsvalley/purescript-js-fileio.git"
-       , version =
-           "2.0.3"
+           "4dea5f20fc4700050b3b0449a2a8b441797dfcf7"
        }

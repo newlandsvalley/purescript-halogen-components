@@ -31,12 +31,12 @@ data Query a =
 data Message = Toggled Boolean
 
 -- | the basic component has a label on the button that never alters
-component :: forall i m. String -> H.Component HH.HTML Query i Message m
+component :: forall i m. String -> H.Component Query i Message m
 component label =
   toggledLabelComponent label label
 
 -- | but the toggled label component toggles between labels each time the button is pressed
-toggledLabelComponent :: forall i m. String -> String -> H.Component HH.HTML Query i Message m
+toggledLabelComponent :: forall i m. String -> String -> H.Component Query i Message m
 toggledLabelComponent offLabel onLabel =
   H.mkComponent
     { initialState
@@ -66,7 +66,7 @@ toggledLabelComponent offLabel onLabel =
           offLabel
     in
       HH.button
-        [ HE.onClick \_ -> Just Toggle
+        [ HE.onClick \_ -> Toggle
         , HP.class_ $ ClassName "hoverable"
         , HP.enabled state.isEnabled
         ]

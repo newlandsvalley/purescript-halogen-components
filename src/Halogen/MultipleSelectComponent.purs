@@ -38,7 +38,7 @@ type State = {
   , selected  :: List String       -- currently selected options
   }
 
-component :: ∀ i m. MonadAff m => Context -> (i -> State) -> H.Component HH.HTML Query i Message m
+component :: ∀ i m. MonadAff m => Context -> (i -> State) -> H.Component Query i Message m
 component ctx initialState =
   H.mkComponent
     { initialState
@@ -76,9 +76,9 @@ component ctx initialState =
         [
           HH.select
             [ HP.class_ $ ClassName "msAddSelection"
-            , HP.id_  "selection-menu"
+            , HP.id  "selection-menu"
             , HP.value ctx.selectPrompt
-            , HE.onValueChange  (Just <<< AddSelection)
+            , HE.onValueChange AddSelection
             ]
             (A.cons
               (HH.option [ HP.disabled true ] [ HH.text ctx.selectPrompt])
@@ -99,7 +99,7 @@ component ctx initialState =
              [ HH.text ctx.commitPrompt ]
           , HH.button
              [ HP.class_ $ ClassName "msCommit hoverable"
-             , HE.onClick (\_ -> Just CommitSelections)
+             , HE.onClick (\_ -> CommitSelections)
              ]
              [ HH.text ctx.commitButtonText ]
           ]
@@ -117,7 +117,7 @@ component ctx initialState =
               [ HH.text s]
           , HH.a
               [ HP.class_ $ ClassName  "msListItemRemove"
-              , HE.onClick (\_ -> Just $ RemoveSelection s)
+              , HE.onClick (\_ -> RemoveSelection s)
               ]
               [ HH.text " remove"]
           ]

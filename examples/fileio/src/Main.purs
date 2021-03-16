@@ -8,7 +8,7 @@ import Halogen.FileInputComponent (component, Message(..)) as FI
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
 import Halogen (liftEffect)
-import Control.Coroutine as CR
+import Halogen.Subscription as HS
 import Data.MediaType (MediaType(..))
 import DOM.HTML.Indexed.InputAcceptType (mediaType)
 import Data.Maybe (Maybe(..))
@@ -32,6 +32,8 @@ main = HA.runHalogenAff
     body <- HA.awaitBody
     io <- runUI (FI.component ctx ) unit body
 
-    io.subscribe $ CR.consumer \(FI.FileLoaded filespec) -> do
-      liftEffect $ log $ "File was loaded: " <> filespec.name
-      pure Nothing
+    liftEffect $ HS.subscribe io.messages \msg -> do
+      case msg of 
+        FI.FileLoaded filespec -> do
+          liftEffect $ log $ "File was loaded: " <> filespec.name
+          pure Nothing

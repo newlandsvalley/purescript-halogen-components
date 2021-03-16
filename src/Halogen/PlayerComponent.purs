@@ -19,8 +19,8 @@ import Audio.SoundFont.Melody.Class (class Playable, toMelody)
 import Control.Monad.State.Class (class MonadState)
 import Data.Array (null, index, length)
 import Data.Generic.Rep (class Generic)
-import Data.Generic.Rep.Eq (genericEq)
-import Data.Generic.Rep.Show (genericShow)
+import Data.Eq.Generic (genericEq)
+import Data.Show.Generic (genericShow)
 import Data.Int (floor, toNumber)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Time.Duration (Milliseconds(..))
@@ -86,7 +86,7 @@ component :: ∀ p m.
   MonadAff m =>
   p ->
   Array Instrument ->
-  H.Component HH.HTML (Query p) Unit Message m
+  H.Component (Query p) Unit Message m
 component playable instruments =
   H.mkComponent
     { initialState
@@ -157,7 +157,7 @@ component playable instruments =
               [ HP.type_ HP.InputImage
               , HP.disabled isDisabled
               , HP.src playButtonImg
-              , HE.onClick (\_ -> Just playAction)
+              , HE.onClick (\_ -> playAction)
               --, HE.onClick (HE.input_ playAction)
               , buttonStyle
               ]
@@ -165,18 +165,18 @@ component playable instruments =
               [ HP.type_ HP.InputImage
               , HP.disabled isDisabled
               , HP.src stopImg
-              , HE.onClick \_ -> Just StopMelodyAction
-              --, HE.onClick (\_ -> Just (EvalQuery StopMelody))
+              , HE.onClick \_ -> StopMelodyAction
+              --, HE.onClick (\_ -> EvalQuery StopMelody)
               , buttonStyle
               ]
           , HH.progress
                 [ HP.max capsuleMax
                 , HP.ref $ H.RefLabel capsule.ref
                 , progressValue sliderPos
-                , HE.onMouseDown \_ -> Just (CapsuleMouseButton true)
-                , HE.onMouseUp \_ -> Just (CapsuleMouseButton false)
-                , HE.onMouseLeave \_ -> Just (CapsuleMouseButton false)
-                , HE.onMouseMove \e -> Just (CapsuleDragPosition ((toNumber <<< clientX) e))
+                , HE.onMouseDown \_ -> CapsuleMouseButton true
+                , HE.onMouseUp \_ -> CapsuleMouseButton false
+                , HE.onMouseLeave \_ -> CapsuleMouseButton false
+                , HE.onMouseMove \e -> CapsuleDragPosition ((toNumber <<< clientX) e)
                 , capsuleStyle
                 ] []
           ]

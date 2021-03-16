@@ -46,7 +46,7 @@ type State =
   , isEnabled :: Boolean
   }
 
-component :: ∀ i m. MonadAff m => Context -> H.Component HH.HTML Query i Message m
+component :: ∀ i m. MonadAff m => Context -> H.Component Query i Message m
 component ctx =
   H.mkComponent
     { initialState
@@ -81,9 +81,9 @@ component ctx =
         -- we set the style to display none so that the label acts as a button
       , HH.input
           [ -- HE.onChange (HE.input_ LoadFile)
-            HE.onChange \_ -> Just LoadFile
+            HE.onChange \_ -> LoadFile
           , HP.type_ HP.InputFile
-          , HP.id_  ctx.componentId
+          , HP.id  ctx.componentId
           , HP.accept ctx.accept
           , HP.enabled state.isEnabled
           , noDisplayStyle

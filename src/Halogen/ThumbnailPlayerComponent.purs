@@ -50,7 +50,7 @@ type State =
 
 component :: ∀ o m.
   MonadAff m =>
-  H.Component HH.HTML Query Input o m
+  H.Component Query Input o m
 component =
   H.mkComponent
     { initialState
