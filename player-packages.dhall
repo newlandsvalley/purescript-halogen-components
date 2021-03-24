@@ -106,7 +106,7 @@ in  upstream
 -}
 
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.14.0-20210315/packages.dhall sha256:b94bb40844a78703075733d646da563a1dd42a884541841f8d708c08084bbf7e
+      https://github.com/purescript/package-sets/releases/download/psc-0.14.0-20210324/packages.dhall sha256:b4564d575da6aed1c042ca7936da97c8b7a29473b63f4515f09bb95fae8dddab
 
 in  upstream
   with halogen-css =
@@ -119,40 +119,27 @@ in  upstream
       , version =
           "master"
       }
-  with soundfonts =
-      { dependencies =
-        [ "affjax"
-        , "argonaut-core"
-        , "b64"
-        , "console"
-        , "effect"
-        , "http-methods"
-        , "midi"
-        , "parallel"
-        , "prelude"
-        ]
-      , repo =
-          "https://github.com/newlandsvalley/purescript-soundfonts.git"
-      , version =
-          "ps014"
-      }
-  with b64 =
-      { dependencies =
-        [ "arraybuffer-types"
-        , "either"
-        , "encoding"
-        , "enums"
-        , "exceptions"
-        , "functions"
-        , "partial"
-        , "prelude"
-        , "strings"
-        ]
-      , repo =
-          "https://github.com/menelaos/purescript-b64.git"
-      , version =
-          "v0.0.7"
-      }
+  with abc-parser =
+       { dependencies =          
+          [ "bifunctors"
+          , "effect"
+          , "either"
+          , "foldable-traversable"
+          , "maybe"
+          , "midi"
+          , "ordered-collections"
+          , "rationals"
+          , "strings"
+          , "stringutils"
+          , "string-parsers"
+          , "transformers"
+          , "tuples"
+       ]
+       , repo =
+         "https://github.com/newlandsvalley/purescript-abc-parser.git"
+       , version =
+         "ps014"
+       }
   with abc-melody =
        { dependencies =
           [ "abc-parser"
@@ -163,5 +150,5 @@ in  upstream
        , repo =
          "https://github.com/newlandsvalley/purescript-abc-melody.git"
        , version =
-         "master"
+         "ps014"
        }

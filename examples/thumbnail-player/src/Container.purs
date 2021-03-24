@@ -10,9 +10,8 @@ import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Data.Traversable (traverse)
 import Data.Tuple (Tuple(..))
-import Debug.Trace (spy)
+import Debug (spy)
 import Effect.Aff.Class (class MonadAff)
-import Data.Symbol (SProxy(..))
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
@@ -25,6 +24,7 @@ import Audio.SoundFont (Instrument)
 import Audio.SoundFont.Melody (Melody)
 import Audio.SoundFont.Melody.Maker (toMelody_)
 import Halogen.ThumbnailPlayerComponent (Query(..), Slot, component) as TNP
+import Type.Proxy (Proxy(..))
 
 type State =
   {
@@ -45,7 +45,8 @@ type Input =
 type ChildSlots =
   ( thumbnailPlayer :: TNP.Slot Unit )
 
-_thumbnailPlayer = SProxy :: SProxy "thumbnailPlayer"
+-- _thumbnailPlayer = SProxy :: SProxy "thumbnailPlayer"
+_thumbnailPlayer = Proxy :: Proxy "thumbnailPlayer"
 
 data Action =
     AddThumbnails       -- add all thumbnails to this page
@@ -74,7 +75,7 @@ defaultThumbnailConfig index =
 component
    :: ∀ o m
     . MonadAff m
-   => H.Component HH.HTML Query Input o m
+   => H.Component Query Input o m
 component =
   H.mkComponent
     { initialState
@@ -111,7 +112,7 @@ component =
       HH.text ""
     else
       HH.button
-        [ HE.onClick \_ -> Just AddThumbnails
+        [ HE.onClick \_ -> AddThumbnails
         , css "hoverable"
         , HP.enabled true
         ]
@@ -144,8 +145,8 @@ component =
             []
             [ HH.div
               [ HP.id_ ("canvas" <> show index)
-              , HE.onMouseLeave \_ -> Just StopThumbnail
-              , HE.onMouseDown \_ -> Just (PlayThumbnail index)
+              , HE.onMouseLeave \_ -> StopThumbnail
+              , HE.onMouseDown \_ -> PlayThumbnail index
               , css "thumbnail"
               ]
               []
@@ -164,7 +165,8 @@ component =
 
     PlayThumbnail idx -> do
       -- play the tumbnail unless the thumbnail player is still playing
-      isPlaying <- H.query _thumbnailPlayer unit $ H.request TNP.IsPlaying
+      -- isPlaying <- H.query _thumbnailPlayer unit $ H.request TNP.IsPlaying
+      isPlaying <- H.request _thumbnailPlayer unit TNP.IsPlaying
       tuneList <- H.gets _.tuneList
       if ((idx >= (length tuneList)) || ( isPlaying == Just true))
         then do
@@ -173,11 +175,13 @@ component =
           let
             abc = unsafePartial $ unsafeIndex tuneList idx
             melody = getThumbnailMelody abc
-          _ <- H.query _thumbnailPlayer unit $ H.tell (TNP.PlayMelody melody)
+          -- _ <- H.query _thumbnailPlayer unit $ H.tell (TNP.PlayMelody melody)
+          _ <- H.tell _thumbnailPlayer unit (TNP.PlayMelody melody)
           pure unit
 
     StopThumbnail -> do
-      _ <- H.query _thumbnailPlayer unit $ H.tell TNP.StopMelody
+      -- _ <- H.query _thumbnailPlayer unit $ H.tell TNP.StopMelody
+      _ <- H.tell _thumbnailPlayer unit TNP.StopMelody
       pure unit
 
   handleQuery :: ∀ a. Query a -> H.HalogenM State Action ChildSlots o m (Maybe a)
