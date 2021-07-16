@@ -8,7 +8,6 @@ module Halogen.PlayerComponent.Style (
   ) where
 
 import Prelude (discard)
-import CSS.TextAlign (center, textAlign)
 import CSS (color, fromString)
 import CSS.Background (background, backgroundImages)
 import CSS.Border (border, borderRadius, solid)
@@ -32,10 +31,12 @@ capsule =
   , width : 220.0
   }
 
+{-}
 centreStyle :: ∀ i r. IProp (style :: String | r) i
 centreStyle =
   style do
     textAlign center
+-}
 
 -- | the capsule is the bit in the centre of the player widget that shows progress
 -- | through the recording

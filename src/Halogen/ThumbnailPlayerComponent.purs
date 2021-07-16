@@ -76,7 +76,7 @@ component =
 
   -- we are renderless
   render :: State -> H.ComponentHTML Action () m
-  render state =
+  render _ =
     HH.text ""
 
 handleQuery :: forall a o m.

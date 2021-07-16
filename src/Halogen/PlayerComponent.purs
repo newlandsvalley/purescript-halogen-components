@@ -268,7 +268,6 @@ handleQuery = case _ of
 
   -- stop then handle a new melody when requested externally
   HandleNewPlayable playable' next -> do
-    state <- H.get
     newState <- stop
     H.put newState { playable = playable', melody = [] }
     pure (Just next)
