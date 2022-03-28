@@ -1,9 +1,9 @@
 module Examples.Player.Main where
 
 import Audio.SoundFont (Instrument, loadRemoteSoundFonts)
-import Audio.SoundFont.Melody (Melody, PMelody(..))
+import Audio.SoundFont.Melody (PMelody(..))
 import Data.Abc.Parser (parse)
-import Data.Abc.Melody (toMelodyDefault)
+import Data.Abc.Melody (PlayableAbc(..), defaultPlayableAbcProperties, toPlayableMelody)
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Data.Midi.Instrument (InstrumentName(..))
@@ -18,40 +18,28 @@ loadInstruments :: Aff (Array Instrument)
 loadInstruments =
   loadRemoteSoundFonts [ AcousticGrandPiano ]
 
-{-}
-note :: Int -> Int -> Number -> Number -> Number -> MidiNote
-note channel id timeOffset duration gain =
-  { channel : channel, id : id, timeOffset : timeOffset, duration : duration, gain : gain }
-
-phraseSample :: Int -> Int -> Array MidiNote
-phraseSample channel basePitch =
- [ note channel basePitch 0.0 0.25 1.0
- , note channel (basePitch + 2) 0.25 0.25 1.0
- , note channel (basePitch + 4) 0.5 0.5 1.0
- , note channel (basePitch + 5) 1.0 0.25 1.0
- , note channel (basePitch + 7) 1.25 0.25 1.0
- , note channel (basePitch + 11) 1.5 0.5 1.0
- ]
-
-melodyf :: Unit -> Melody
-melodyf =
-  (\_ -> [ (phraseSample 0 60), (phraseSample 0 64), (phraseSample 0 67)])
--}
-
-
 main :: Effect Unit
 main = HA.runHalogenAff do
   instruments <- H.liftAff loadInstruments
+  {-
   let
     melody = getMelody augustsson
-  body <- HA.awaitBody
-  -- io <- runUI (component (Just (MidiRecording recording)) instruments) (MidiRecording recording) body
-  io <- runUI (component (PMelody melody) instruments) unit body
-  {- if we want to change the Playable recording, we can use this:
-  _ <- io.query $ H.action $ HandleNewPlayable (MidiRecording recording)
-  -}
-  pure unit
+  -} 
+  case (parse augustsson) of 
+    Right tune -> do 
+      let
+        props = defaultPlayableAbcProperties { tune = tune }
+        melody = toPlayableMelody (PlayableAbc props)
+      body <- HA.awaitBody
+      io <- runUI (component (PMelody melody) instruments) unit body
+      {- if we want to change the Playable recording, we can use this:
+      _ <- io.query $ H.action $ HandleNewPlayable (MidiRecording recording)
+      -}
+      pure unit 
+    Left _ ->
+      pure unit
 
+{-}
 getMelody :: String -> Melody
 getMelody abc =
   case (parse abc) of
@@ -59,6 +47,7 @@ getMelody abc =
       toMelodyDefault abcTune
     _ ->
       []
+-}
 
 augustsson :: String
 augustsson =

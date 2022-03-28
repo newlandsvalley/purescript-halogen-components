@@ -106,25 +106,36 @@ in  upstream
 -}
 
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.14.2-20210713/packages.dhall sha256:654c3148cb995f642c73b4508d987d9896e2ad3ea1d325a1e826c034c0d3cd7b
+      https://github.com/purescript/package-sets/releases/download/psc-0.14.7-20220321/packages.dhall
+        sha256:dff91304260c1196273badf7d8141e66ab16bed147b95aa175dd8a84ec87d58f
 
 in  upstream
   with abc-parser =
-       { dependencies =          
-          [ "bifunctors"
-          , "effect"
-          , "either"
-          , "foldable-traversable"
-          , "maybe"
-          , "midi"
-          , "ordered-collections"
-          , "rationals"
-          , "strings"
-          , "stringutils"
-          , "string-parsers"
-          , "transformers"
-          , "tuples"
-       ]
+       { dependencies =   
+         [ "arrays"
+         , "bifunctors"
+         , "control"
+         , "either"
+         , "enums"
+         , "foldable-traversable"
+         , "identity"
+         , "integers"
+         , "lists"
+         , "maybe"
+         , "midi"
+         , "newtype"
+         , "ordered-collections"
+         , "partial"
+         , "prelude"
+         , "profunctor-lenses"
+         , "rationals"
+         , "string-parsers"
+         , "strings"
+         , "stringutils"
+         , "transformers"
+         , "tuples"
+         , "unfoldable"
+         ]
        , repo =
          "https://github.com/newlandsvalley/purescript-abc-parser.git"
        , version =
@@ -132,13 +143,81 @@ in  upstream
        }
   with abc-melody =
        { dependencies =
-          [ "abc-parser"
-          , "effect"
-          , "prelude"
-          , "soundfonts"
-          ]
+         [ "abc-parser"
+         , "arrays"
+         , "bifunctors"
+         , "either"
+         , "foldable-traversable"
+         , "integers"
+         , "lists"
+         , "maybe"
+         , "newtype"
+         , "ordered-collections"
+         , "prelude"
+         , "rationals"
+         , "rhythm-guitar"
+         , "soundfonts"
+         , "transformers"
+         , "tuples"
+         ]
        , repo =
          "https://github.com/newlandsvalley/purescript-abc-melody.git"
        , version =
          "ps014"
        }
+  with rhythm-guitar =
+    { dependencies =
+      [ "aff"
+      , "affjax"
+      , "arrays"
+      , "console"
+      , "control"
+      , "debug"
+      , "effect"
+      , "either"
+      , "foreign"
+      , "http-methods"
+      , "maybe"
+      , "ordered-collections"
+      , "prelude"
+      , "psci-support"
+      , "simple-json"
+      , "soundfonts"
+      , "string-parsers"
+      , "strings"
+      , "tuples"
+      ]
+    , repo = "https://github.com/newlandsvalley/RhythmGuitar.git"
+    , version = "main"
+    }
+  with soundfonts =
+    { dependencies =
+      [ "aff"
+      , "affjax"
+      , "argonaut-core"
+      , "arraybuffer-types"
+      , "arrays"
+      , "b64"
+      , "bifunctors"
+      , "console"
+      , "effect"
+      , "either"
+      , "exceptions"
+      , "foldable-traversable"
+      , "foreign-object"
+      , "http-methods"
+      , "integers"
+      , "lists"
+      , "maybe"
+      , "midi"
+      , "ordered-collections"
+      , "parallel"
+      , "partial"
+      , "prelude"
+      , "strings"
+      , "transformers"
+      , "tuples"
+      ]
+    , repo = "https://github.com/newlandsvalley/purescript-soundfonts.git"
+    , version = "v3.3.0"
+    }

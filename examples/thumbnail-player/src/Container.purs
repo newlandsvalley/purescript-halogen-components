@@ -18,8 +18,8 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Partial.Unsafe (unsafePartial)
 import VexFlow.Abc.Alignment (justifiedScoreConfig, rightJustify)
-import VexFlow.Score (Renderer, clearCanvas, createScore, renderScore, initialiseCanvas, resizeCanvas)
-import VexFlow.Types (Config)
+import VexFlow.Score (Renderer, clearCanvas, createScore, initialiseCanvas, renderThumbnail, resizeCanvas)
+import VexFlow.Types (Config, defaultConfig)
 import Audio.SoundFont (Instrument)
 import Audio.SoundFont.Melody (Melody)
 import Audio.SoundFont.Melody.Maker (toMelody_)
@@ -63,6 +63,7 @@ canvasWidth =
 -- The default config for each thumbnail image via Vexflow
 -- This is an initial config with a small height which is
 -- overridden when the image is justified to its actual dimensions
+{-}
 defaultThumbnailConfig :: Int -> Config
 defaultThumbnailConfig index =
   { parentElementId : ("canvas" <> show index)
@@ -70,7 +71,21 @@ defaultThumbnailConfig index =
   , height : 10       -- set to a small value so we can reduce to this between pages
   , scale : scale
   , isSVG : true      -- only use Canvas backends for debug
+  , showChordSymbols: false
+  , titled : false 
   }
+-}
+
+defaultThumbnailConfig :: Int -> Config
+defaultThumbnailConfig index = defaultConfig 
+  { parentElementId = ("canvas" <> show index)
+  , width = canvasWidth
+  , height = 10
+  , isSVG = true
+  , titled = false 
+  }
+
+
 
 component
    :: ∀ o m
@@ -227,8 +242,13 @@ component =
                 unjustifiedScore = createScore (defaultThumbnailConfig idx) (thumbnail abcTune)
                 score = rightJustify canvasWidth scale unjustifiedScore
                 config = justifiedScoreConfig score (defaultThumbnailConfig idx)
+              {-
               _ <- H.liftEffect $ resizeCanvas renderer config
               _ <- H.liftEffect $ renderScore config renderer score
+              -}
+
+              renderer <- H.liftEffect $ initialiseCanvas config
+              _ <- H.liftEffect $ renderThumbnail config renderer abcTune 
               handleQuery (Thumbnail (idx + 1) next)
             (Tuple (Right _) Nothing)  -> do
               let
