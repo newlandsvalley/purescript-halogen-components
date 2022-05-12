@@ -7,11 +7,12 @@ module Halogen.PlayerComponent.Style (
   , buttonStyle
   ) where
 
-import Prelude (discard)
+import Data.NonEmpty ((:|), singleton)
+import Prelude (($), discard)
 import CSS (color, fromString)
 import CSS.Background (background, backgroundImages)
 import CSS.Border (border, borderRadius, solid)
-import CSS.Box (boxShadow)
+import CSS.Box (boxShadow, shadow)
 import CSS.Color (rgb, rgba)
 import CSS.Display (display, inlineBlock)
 import CSS.Geometry (width, height, margin)
@@ -57,7 +58,7 @@ capsuleStyle =
       , fromString "-o-gradient(top, rgba(0, 0, 0, 0.5) 1, #333 0)"
       , fromString "linear-gradient(top, rgba(0, 0, 0, 0.5) 1, #333 0)"
       ]
-    boxShadow (px 0.0) (px 0.0) (px 0.0) (rgb 5 5 5)
+    boxShadow $ singleton $ shadow (px 0.0) (px 0.0) -- (px 0.0) (rgb 5 5 5)
     overflow hidden
     display inlineBlock
     width (px capsule.width)
@@ -88,7 +89,7 @@ playerStyle =
       , fromString "-o-gradient(top, rgba(66, 66, 66, 1) 0%, rgba(22, 22, 22, 1) 100%)"
       , fromString "linear-gradient(top, rgba(66, 66, 66, 1) 0%, rgba(22, 22, 22, 1) 100%)"
       ]
-    boxShadow (px 0.0) (px 0.0) (px 10.0) (rgb 15 15 15) -- #fff
+    boxShadow $ singleton $ shadow (px 0.0) (px 0.0) -- (px 10.0) (rgb 15 15 15) -- #fff
     borderRadius (px 10.0) (px 10.0) (px 10.0) (px 10.0)
     color (rgba 255 255 255 0.8)
     -- "text-shadow", "1px 1px 2px #000"  ???

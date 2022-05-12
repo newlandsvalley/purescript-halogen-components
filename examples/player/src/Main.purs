@@ -27,7 +27,7 @@ main = HA.runHalogenAff do
         props = defaultPlayableAbcProperties { tune = tune }
         melody = toPlayableMelody (PlayableAbc props)
       body <- HA.awaitBody
-      io <- runUI (component (PMelody melody) instruments) unit body
+      _io <- runUI (component (PMelody melody) instruments) unit body
       {- if we want to change the Playable recording, we can use this:
       _ <- io.query $ H.action $ HandleNewPlayable (MidiRecording recording)
       -}

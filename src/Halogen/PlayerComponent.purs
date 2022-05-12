@@ -35,7 +35,8 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.PlayerComponent.Style (capsule, capsuleStyle, playerBlockStyle, playerStyle, buttonStyle)
 import Web.UIEvent.MouseEvent (clientX)
-import Web.HTML.HTMLElement (HTMLElement, getBoundingClientRect)
+import Web.HTML.HTMLElement (HTMLElement, toElement)
+import Web.DOM.Element (getBoundingClientRect)
 
 type Slot p = H.Slot (Query p) Message
 
@@ -400,5 +401,5 @@ progressValue = HP.prop (PropName "value")
 -- get the X position of the player capsule
 getCapsuleX :: HTMLElement -> Effect Number
 getCapsuleX capsuleElement = do
-  rect <- getBoundingClientRect capsuleElement
+  rect <- getBoundingClientRect $ toElement capsuleElement
   pure $ rect.left

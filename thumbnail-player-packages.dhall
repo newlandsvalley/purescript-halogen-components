@@ -106,8 +106,8 @@ in  upstream
 -}
 
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.14.7-20220321/packages.dhall
-        sha256:dff91304260c1196273badf7d8141e66ab16bed147b95aa175dd8a84ec87d58f
+      https://github.com/purescript/package-sets/releases/download/psc-0.15.0-20220510/packages.dhall
+        sha256:0b0d4db1f2f0acd3b37fa53220644ac6f64cf9b5d0226fd097c0593df563d5be
 
 in  upstream
   with abc-melody =
@@ -132,7 +132,7 @@ in  upstream
        , repo =
          "https://github.com/newlandsvalley/purescript-abc-melody.git"
        , version =
-         "ps014"
+         "ps015"
        }
   with abc-scores =
        { dependencies =
@@ -159,7 +159,7 @@ in  upstream
        , repo =
            "https://github.com/newlandsvalley/purescript-abc-scores.git"
        , version =
-           "ps014"
+           "ps015"
        }
     with abc-parser =
       { dependencies =
@@ -190,37 +190,5 @@ in  upstream
        , repo =
            "https://github.com/newlandsvalley/purescript-abc-parser.git"
        , version =
-           "ps014"
+           "ps015"
        }
-  with soundfonts =
-    { dependencies =
-      [ "aff"
-      , "affjax"
-      , "argonaut-core"
-      , "arraybuffer-types"
-      , "arrays"
-      , "b64"
-      , "bifunctors"
-      , "console"
-      , "effect"
-      , "either"
-      , "exceptions"
-      , "foldable-traversable"
-      , "foreign-object"
-      , "http-methods"
-      , "integers"
-      , "lists"
-      , "maybe"
-      , "midi"
-      , "ordered-collections"
-      , "parallel"
-      , "partial"
-      , "prelude"
-      , "strings"
-      , "transformers"
-      , "tuples"
-      ]
-    , repo = "https://github.com/newlandsvalley/purescript-soundfonts.git"
-    , version = "v3.3.0"
-    }
-

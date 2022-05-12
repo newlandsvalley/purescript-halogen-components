@@ -144,7 +144,7 @@ component =
           , HH.td
             []
             [ HH.div
-              [ HP.id_ ("canvas" <> show index)
+              [ HP.id ("canvas" <> show index)
               , HE.onMouseLeave \_ -> StopThumbnail
               , HE.onMouseDown \_ -> PlayThumbnail index
               , css "thumbnail"

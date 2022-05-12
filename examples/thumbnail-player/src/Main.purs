@@ -19,5 +19,5 @@ main :: Effect Unit
 main = HA.runHalogenAff do
   instruments <- H.liftAff loadInstruments
   body <- HA.awaitBody
-  io <- runUI component { instruments : instruments } body
+  _io <- runUI component { instruments : instruments } body
   pure unit

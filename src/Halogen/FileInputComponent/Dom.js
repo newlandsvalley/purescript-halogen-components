@@ -1,8 +1,8 @@
 "use strict";
 
-exports.resetInputValue = function (componentId) {
+export function resetInputValue(componentId) {
     return function () {
       var fileInput = document.getElementById(componentId);
       fileInput.value = "";
     }
-  };
+  }

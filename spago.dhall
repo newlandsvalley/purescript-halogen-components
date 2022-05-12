@@ -16,9 +16,11 @@ You can edit this file as you like.
   , "js-fileio"
   , "lists"
   , "maybe"
+  , "nonempty"
   , "prelude"
   , "soundfonts"
   , "transformers"
+  , "web-dom"
   , "web-html"
   , "web-uievents"
   ]
