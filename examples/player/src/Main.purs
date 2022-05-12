@@ -21,10 +21,6 @@ loadInstruments =
 main :: Effect Unit
 main = HA.runHalogenAff do
   instruments <- H.liftAff loadInstruments
-  {-
-  let
-    melody = getMelody augustsson
-  -} 
   case (parse augustsson) of 
     Right tune -> do 
       let
@@ -38,16 +34,6 @@ main = HA.runHalogenAff do
       pure unit 
     Left _ ->
       pure unit
-
-{-}
-getMelody :: String -> Melody
-getMelody abc =
-  case (parse abc) of
-    Right abcTune ->
-      toMelodyDefault abcTune
-    _ ->
-      []
--}
 
 augustsson :: String
 augustsson =

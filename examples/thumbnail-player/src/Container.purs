@@ -63,29 +63,14 @@ canvasWidth =
 -- The default config for each thumbnail image via Vexflow
 -- This is an initial config with a small height which is
 -- overridden when the image is justified to its actual dimensions
-{-}
-defaultThumbnailConfig :: Int -> Config
-defaultThumbnailConfig index =
-  { parentElementId : ("canvas" <> show index)
-  , width : canvasWidth
-  , height : 10       -- set to a small value so we can reduce to this between pages
-  , scale : scale
-  , isSVG : true      -- only use Canvas backends for debug
-  , showChordSymbols: false
-  , titled : false 
-  }
--}
-
 defaultThumbnailConfig :: Int -> Config
 defaultThumbnailConfig index = defaultConfig 
   { parentElementId = ("canvas" <> show index)
   , width = canvasWidth
   , height = 10
-  , isSVG = true
+  , scale = scale
   , titled = false 
   }
-
-
 
 component
    :: ∀ o m
