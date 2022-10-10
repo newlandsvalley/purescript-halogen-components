@@ -2,9 +2,9 @@ module Examples.ThumbnailPlayer.Container where
 
 import Prelude
 
-import Data.Abc.Metadata (thumbnail, removeRepeatMarkers)
+import Data.Abc.Utils (thumbnail, removeRepeatMarkers)
 import Data.Abc.Parser (parse)
-import Data.Abc.Midi (toMidi)
+import Data.Abc.Midi (toMidiRecording)
 import Data.Array (index, length, mapWithIndex, unsafeIndex)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
@@ -18,7 +18,7 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Partial.Unsafe (unsafePartial)
 import VexFlow.Abc.Alignment (justifiedScoreConfig, rightJustify)
-import VexFlow.Score (Renderer, clearCanvas, createScore, initialiseCanvas, renderThumbnail, resizeCanvas)
+import VexFlow.Score (Renderer, clearCanvas, createScore, initialiseCanvas, renderThumbnail)
 import VexFlow.Types (Config, defaultConfig)
 import Audio.SoundFont (Instrument)
 import Audio.SoundFont.Melody (Melody)
@@ -135,7 +135,7 @@ component =
     where
 
       tableRow :: Int -> String -> H.ComponentHTML Action ChildSlots m
-      tableRow index abc =
+      tableRow index _abc =
         HH.tr
           [  ]
           [ HH.td
@@ -254,7 +254,7 @@ getThumbnailMelody :: String -> Melody
 getThumbnailMelody abc =
   case (parse abc) of
     Right abcTune ->
-      (toMelody_ 0.25 <<< toMidi <<< removeRepeatMarkers <<< thumbnail) abcTune
+      (toMelody_ 0.25 <<< toMidiRecording <<< removeRepeatMarkers <<< thumbnail) abcTune
     _ ->
       []
 

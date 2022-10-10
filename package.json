@@ -2,20 +2,15 @@
   "private": true,
   "scripts": {
     "build": "spago build",
-    "pulp-build": "pulp build",
     "button": "spago -x ./button.dhall bundle-app --main Examples.Button.Main --to examples/button/dist/app.js",
     "fileio": "spago -x ./fileio.dhall bundle-app --main Examples.Fileio.Main --to examples/fileio/dist/app.js",
     "multiple-select": "spago -x ./multiple-select.dhall bundle-app --main Examples.MultipleSelect.Main --to examples/multiple-select/dist/app.js",
     "player": "spago -x ./player.dhall bundle-app --main Examples.Player.Main --to examples/player/dist/app.js",
-    "thumbnail-player": "spago -x ./thumbnail-player.dhall bundle-app --main Examples.ThumbnailPlayer.Main --to examples/thumbnail-player/dist/app.js",
-    "pulp-button": "pulp build --main Examples.Button.Main --include examples/button/src --to examples/button/dist/app.js",
-    "pulp-fileio": "pulp build --main Examples.Fileio.Main --include examples/fileio/src --to examples/fileio/dist/app.js",
-    "pulp-multiple-select": "pulp build --main Examples.MultipleSelect.Main --include examples/multiple-select/src --to examples/multiple-select/dist/app.js"
+    "thumbnail-player": "spago -x ./thumbnail-player.dhall bundle-app --main Examples.ThumbnailPlayer.Main --to examples/thumbnail-player/dist/app.js"
   },
   "devDependencies": {
-    "pulp": "^16.0.0",
     "spago": "^0.20.9",
-    "purescript": "^0.15.0",
+    "purescript": "^0.15.4",
     "webpack": "^3.6.0"
   }
 }

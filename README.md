@@ -14,12 +14,6 @@ to build
 
      spago build
 
-or
-
-     bower install
-     pulp build
-
-
 to build the examples:
 ----------------------
 
