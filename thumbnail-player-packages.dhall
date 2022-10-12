@@ -132,7 +132,7 @@ in  upstream
        , repo =
          "https://github.com/newlandsvalley/purescript-abc-melody.git"
        , version =
-         "ps015"
+         "v0.3.0"
        }
   with abc-scores =
        { dependencies =

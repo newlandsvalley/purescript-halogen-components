@@ -132,7 +132,7 @@ in  upstream
        , repo =
          "https://github.com/newlandsvalley/purescript-abc-melody.git"
        , version =
-         "ps015"
+         "v0.3.0"
        }
   with rhythm-guitar =
     { dependencies =
@@ -151,11 +151,11 @@ in  upstream
       , "prelude"
       , "psci-support"
       , "soundfonts"
+      , "simple-json"
       , "string-parsers"
       , "strings"
       , "tuples"
-      , "yoga-json"
       ]
     , repo = "https://github.com/newlandsvalley/RhythmGuitar.git"
-    , version = "main"
+    , version = "v0.2.0"
     }
