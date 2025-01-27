@@ -1,0 +1,10 @@
+package:
+  name: player
+  dependencies:
+    - aff
+    - console
+    - effect
+    - abc-parser
+    - abc-melody
+    - soundfonts
+    - halogen-components

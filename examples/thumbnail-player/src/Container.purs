@@ -1,4 +1,4 @@
-module Examples.ThumbnailPlayer.Container where
+module Container where
 
 import Prelude
 
@@ -19,7 +19,7 @@ import Halogen.HTML.Properties as HP
 import Partial.Unsafe (unsafePartial)
 import VexFlow.Abc.Alignment (justifiedScoreConfig, rightJustify)
 import VexFlow.Score (Renderer, clearCanvas, createScore, initialiseCanvas, renderThumbnail)
-import VexFlow.Types (Config, defaultConfig)
+import VexFlow.Types (Config, Titling(..), defaultConfig)
 import Audio.SoundFont (Instrument)
 import Audio.SoundFont.Melody (Melody)
 import Audio.SoundFont.Melody.Maker (toMelody_)
@@ -69,7 +69,7 @@ defaultThumbnailConfig index = defaultConfig
   , width = canvasWidth
   , height = 10
   , scale = scale
-  , titled = false 
+  , titling = NoTitle
   }
 
 component

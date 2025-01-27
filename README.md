@@ -9,10 +9,12 @@ This module consists of a heterogeneous group of UI components, chosen because t
   * Multiple select dropdown
   * Trivial button (deprecated)
 
+The workspace contains libraries which are required to support every example.  If you only need a subset, the dependencies may lessen.  The thumbnal player requires all of them, the player requires all but abc-scores.  Others are simpler.  See the individual spago.yaml for each example.
+
 to build
 --------
 
-     spago build
+     npm run build build
 
 to build the examples:
 ----------------------

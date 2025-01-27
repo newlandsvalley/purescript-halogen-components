@@ -1,4 +1,4 @@
-module Examples.Player.Main where
+module Main where
 
 import Audio.SoundFont (Instrument, loadRemoteSoundFonts)
 import Audio.SoundFont.Melody (PMelody(..))

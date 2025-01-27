@@ -1,16 +1,19 @@
 {
   "private": true,
   "scripts": {
-    "build": "spago build",
-    "button": "spago -x ./button.dhall bundle-app --main Examples.Button.Main --to examples/button/dist/app.js",
-    "fileio": "spago -x ./fileio.dhall bundle-app --main Examples.Fileio.Main --to examples/fileio/dist/app.js",
-    "multiple-select": "spago -x ./multiple-select.dhall bundle-app --main Examples.MultipleSelect.Main --to examples/multiple-select/dist/app.js",
-    "player": "spago -x ./player.dhall bundle-app --main Examples.Player.Main --to examples/player/dist/app.js",
-    "thumbnail-player": "spago -x ./thumbnail-player.dhall bundle-app --main Examples.ThumbnailPlayer.Main --to examples/thumbnail-player/dist/app.js"
+    "build": "spago build --package halogen-components",
+    "button": "spago bundle --package button --outfile dist/app.js --bundle-type app --platform browser",
+    "fileio": "spago bundle --package fileio --outfile dist/app.js --bundle-type app --platform browser",
+    "multiple-select": "spago bundle --package multiple-select --outfile dist/app.js --bundle-type app --platform browser",
+    "player": "spago bundle --package player --outfile dist/app.js --bundle-type app --platform browser",
+    "thumbnail-player": "spago bundle --package thumbnail-player --outfile dist/app.js --bundle-type app --platform browser"
   },
   "devDependencies": {
-    "spago": "^0.20.9",
-    "purescript": "^0.15.4",
+    "purescript": "^0.15.15",
+    "spago": "^0.93.42",
     "webpack": "^3.6.0"
+  },
+  "dependencies": {
+    "esbuild": "^0.18.20"
   }
 }

@@ -1,0 +1,12 @@
+package:
+  name: thumbnail-player
+  dependencies:
+    - aff
+    - console
+    - debug
+    - effect
+    - abc-parser
+    - abc-melody
+    - abc-scores
+    - soundfonts
+    - halogen-components

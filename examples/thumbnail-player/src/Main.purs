@@ -1,4 +1,4 @@
-module Examples.ThumbnailPlayer.Main where
+module Main where
 
 import Audio.SoundFont (Instrument, loadRemoteSoundFonts)
 import Effect (Effect)
@@ -7,7 +7,7 @@ import Data.Midi.Instrument (InstrumentName(..))
 import Halogen as H
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
-import Examples.ThumbnailPlayer.Container (component)
+import Container (component)
 import Prelude (Unit, unit, bind, pure)
 
 

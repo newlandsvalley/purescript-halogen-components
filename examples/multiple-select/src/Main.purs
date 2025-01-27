@@ -1,4 +1,4 @@
-module Examples.MultipleSelect.Main where
+module Main where
 
 import Prelude (($), (<>), Unit, bind, discard, pure, unit)
 import Data.Foldable (intercalate)
