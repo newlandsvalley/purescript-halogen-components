@@ -11,7 +11,7 @@
   "devDependencies": {
     "purescript": "^0.15.15",
     "spago": "^0.93.42",
-    "webpack": "^3.6.0"
+    "webpack": "^5.97.1"
   },
   "dependencies": {
     "esbuild": "^0.18.20"

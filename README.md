@@ -14,7 +14,7 @@ The workspace contains libraries which are required to support every example.  I
 to build
 --------
 
-     npm run build build
+     npm run build
 
 to build the examples:
 ----------------------
