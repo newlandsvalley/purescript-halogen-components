@@ -7,7 +7,7 @@ module Halogen.PlayerComponent.Style (
   , buttonStyle
   ) where
 
-import Data.NonEmpty ((:|), singleton)
+import Data.NonEmpty (singleton)
 import Prelude (($), discard)
 import CSS (color, fromString)
 import CSS.Background (background, backgroundImages)

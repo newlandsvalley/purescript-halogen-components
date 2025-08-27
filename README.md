@@ -16,6 +16,8 @@ to build
 
      npm run build
 
+     (Do not simply use `spago build` because there are multiple `mains` in the examples.)
+
 to build the examples:
 ----------------------
 
