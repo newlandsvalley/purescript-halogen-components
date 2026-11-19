@@ -19,7 +19,6 @@ import Audio.SoundFont.Melody.Class (class Playable, toMelody)
 import Control.Monad.State.Class (class MonadState)
 import Data.Array (null, index, length)
 import Data.Generic.Rep (class Generic)
-import Data.Eq.Generic (genericEq)
 import Data.Show.Generic (genericShow)
 import Data.Int (floor, toNumber)
 import Data.Maybe (Maybe(..), maybe)
@@ -45,12 +44,15 @@ data PlaybackState =
     PLAYING           -- the melody is playing
   | PENDINGPAUSED     -- the pause button has been hit, but the phrase is stil finishing
   | PAUSED            -- the melody is not playing  (paused or stopped)
+  derive (Eq)
 
 derive instance genericPlaybackState :: Generic PlaybackState _
 instance showEvent :: Show PlaybackState where
   show = genericShow
+{-}
 instance eqEvent :: Eq PlaybackState where
   eq = genericEq
+-}
 
 
 data Message = IsPlaying Boolean
